@@ -133,7 +133,7 @@ a:focus-visible, button:focus-visible {
    Gallery flow — a walk, not a feed
    ———————————————————————————————— */
 .flow {
-  padding: 16vh var(--gutter);
+  padding: 10vh var(--gutter);
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -151,7 +151,7 @@ a:focus-visible, button:focus-visible {
 }
 
 .piece {
-  margin: 0 0 18vh;
+  margin: 0 0 10vh;
 }
 .piece:nth-child(odd)  { width: min(100%, 720px); margin-right: auto; }
 .piece:nth-child(even) { width: min(100%, 620px); margin-left: auto; }
@@ -329,29 +329,6 @@ a:focus-visible, button:focus-visible {
 .admin .toggle { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--muted); }
 
 /* ————————————————————————————————
-   V2 — hero art direction
-   ———————————————————————————————— */
-/* Make the hero photo wrapper fill the frame; crop from the image, anchored low
-   so the road stays in view. */
-.hero .hero-img .photo {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  aspect-ratio: auto !important;
-}
-.hero .hero-img img {
-  object-position: center 78%;
-}
-
-/* Portrait hero by default; swap to the landscape frame on wide screens. */
-.hero-wide { display: none; }
-@media (min-aspect-ratio: 5/4) {
-  .hero-tall:has(+ .hero-wide) { display: none; }
-  .hero-wide { display: block; }
-  .hero .hero-img .hero-wide img { object-position: center 60%; }
-}
-
-/* ————————————————————————————————
    V2 — footer socials
    ———————————————————————————————— */
 .footer-social { display: flex; gap: 1.5rem; }
@@ -480,3 +457,97 @@ a:focus-visible, button:focus-visible {
 }
 .editor .danger { border-color: rgba(200, 90, 70, 0.5); color: rgba(220, 130, 110, 0.9); }
 .editor .danger:hover { border-color: rgba(220, 110, 90, 0.9); color: rgb(230, 140, 120); }
+
+/* ————————————————————————————————
+   V3 — the opening: type + gallery wall
+   ———————————————————————————————— */
+.opening {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 1.6fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  padding: calc(5rem + 2vh) var(--gutter) 6vh;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.opening-type h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(3.4rem, 7vw, 6rem);
+  line-height: 1;
+  margin: 0 0 1.2rem;
+  letter-spacing: 0.01em;
+}
+
+.opening-line {
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  color: var(--muted);
+  margin: 0 0 2.2rem;
+  max-width: 18ch;
+}
+
+/* The wall — three frames, hung at different heights and sizes.
+   Two columns: the tall anchor hangs right; the two smaller frames
+   stack left, staggered so no edges align. */
+.wall {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: start;
+}
+
+.wall-piece {
+  margin: 0;
+  cursor: zoom-in;
+}
+.wall-piece figcaption {
+  margin-top: 0.6rem;
+  font-family: var(--sans);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* Frame 1 — tall anchor, right column */
+.wall-1 {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+/* Frame 2 — left column, hung noticeably lower than the anchor's top */
+.wall-2 {
+  grid-column: 1;
+  grid-row: 1;
+  margin-top: 22%;
+}
+/* Frame 3 — small accent under frame 2, indented right */
+.wall-3 {
+  grid-column: 1;
+  grid-row: 2;
+  width: 62%;
+  margin-left: 24%;
+  margin-top: 1.5rem;
+}
+
+/* On narrow screens the wall stacks under the type, staggered by indent */
+@media (max-width: 899px) {
+  .opening {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding-top: calc(5rem + 4vh);
+    min-height: auto;
+  }
+  .wall { display: block; }
+  .wall-piece { margin-bottom: 1.5rem; }
+  .wall-1 { width: 100%; }
+  .wall-2 { width: 78%; margin-left: auto; }
+  .wall-3 { width: 58%; }
+}
+
+/* Flow + closing cards spacing on home */
+.home-flow { padding-top: 6vh; }
+.home-collections { padding-top: 2vh; }
+.home-collections .collections { margin-top: 5vh; }

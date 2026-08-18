@@ -2,60 +2,57 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
-import { getFeatured } from "../lib/data";
+import { getFeatured, getAlbums } from "../lib/data";
 import { useTitle } from "../lib/title";
-
-// True when the viewport is wide (landscape-shaped), kept in sync on resize.
-function useWideScreen() {
-  const query = "(min-aspect-ratio: 5/4)";
-  const [wide, setWide] = useState(
-    () => window.matchMedia(query).matches
-  );
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const onChange = (e) => setWide(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-  return wide;
-}
 
 export default function Home() {
   const [photos, setPhotos] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [lb, setLb] = useState(null);
-  const wide = useWideScreen();
   useTitle(null);
 
   useEffect(() => {
     getFeatured().then(setPhotos).catch(console.error);
+    getAlbums()
+      .then((all) => setAlbums(all.filter((a) => a.slug !== "featured")))
+      .catch(console.error);
   }, []);
 
-  // One hero, chosen here: first photo by default; on wide screens,
-  // the first landscape-orientation photo if there is one.
-  const landscape = photos.find((p) => p.width > p.height);
-  const hero = wide && landscape ? landscape : photos[0];
-
-  // The flow is everything except the photo actually shown as hero.
-  const rest = photos.filter((p) => p !== hero);
+  // The gallery wall: first three Featured photos, hung at different sizes.
+  const wall = photos.slice(0, 3);
+  // The flow continues with the rest.
+  const rest = photos.slice(3);
 
   return (
     <main>
-      <section className="hero">
-        <div className="hero-img">
-          {hero && <Photo key={hero.id} photo={hero} eager sizes="100vw" />}
-        </div>
-        <div className="hero-foot">
-          <p className="hero-line">Photographs from quiet places.</p>
+      <section className="opening">
+        <div className="opening-type">
+          <h1>Cate</h1>
+          <p className="opening-line">Photographs from quiet&nbsp;places.</p>
           <span className="label">Blue Ridge &amp; beyond</span>
+        </div>
+        <div className="wall">
+          {wall.map((p, i) => (
+            <figure
+              className={`wall-piece wall-${i + 1}`}
+              key={p.id}
+              onClick={() => setLb(i)}
+            >
+              <Photo photo={p} eager={i === 0} sizes="(min-width: 900px) 40vw, 70vw" />
+              <figcaption>
+                <span>{p.caption}</span>
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </section>
 
-      <section className="flow">
+      <section className="flow home-flow">
         <div className="flow-head">
           <span className="label">Selected</span>
         </div>
         {rest.map((p, i) => (
-          <figure className="piece" key={p.id} onClick={() => setLb(i)}>
+          <figure className="piece" key={p.id} onClick={() => setLb(i + wall.length)}>
             <Photo photo={p} sizes="(min-width: 760px) 720px, 100vw" />
             <figcaption>
               <span>{p.caption}</span>
@@ -63,15 +60,29 @@ export default function Home() {
             </figcaption>
           </figure>
         ))}
+      </section>
+
+      <section className="page home-collections">
         <div className="flow-head">
-          <Link to="/work" className="label" style={{ color: "var(--bone)" }}>
-            All collections →
-          </Link>
+          <span className="label">Collections</span>
+        </div>
+        <div className="collections">
+          {albums.map((a) => (
+            <Link to={`/work/${a.slug}`} className="collection-card" key={a.id}>
+              {a.cover && (
+                <Photo photo={a.cover} sizes="(min-width: 760px) 50vw, 100vw" />
+              )}
+              <h2>{a.title}</h2>
+              <span className="count label">
+                {a.photos.length} photograph{a.photos.length === 1 ? "" : "s"}
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 
       {lb !== null && (
-        <Lightbox photos={rest} index={lb} onClose={() => setLb(null)} onIndex={setLb} />
+        <Lightbox photos={photos} index={lb} onClose={() => setLb(null)} onIndex={setLb} />
       )}
     </main>
   );
