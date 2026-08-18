@@ -809,3 +809,71 @@ a:focus-visible, button:focus-visible {
 }
 .note-task-done:hover { color: var(--bone); border-color: var(--grass); }
 .note-signout.drawer-open { color: var(--bone); border-color: var(--grass); }
+
+/* ————————————————————————————————
+   V5 — the studio gets a face
+   ———————————————————————————————— */
+.studio-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.studio-greeting {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin: 0.5rem 0 0.4rem;
+}
+.studio-stats { letter-spacing: 0.08em; }
+.studio-nav { display: flex; gap: 0.75rem; align-items: center; }
+.studio-nav-link {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.15rem;
+  margin-right: 0.5rem;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.studio-nav-link:hover { color: var(--bone); border-color: var(--grass); }
+
+.new-collection { display: flex; gap: 0.75rem; margin-top: 0.6rem; }
+.new-collection input { margin-bottom: 0; flex: 1; }
+
+.album-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+}
+.card .album-row:first-of-type { margin-top: 0.9rem; }
+.album-row-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+.album-thumb {
+  flex: none;
+  width: 3.2rem;
+  height: 3.2rem;
+  overflow: hidden;
+  background: var(--ink);
+  border: 1px solid var(--line);
+}
+.album-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.album-thumb-empty { display: block; width: 100%; height: 100%; }
+.album-row-text { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.album-row-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--bone);
+}
+.album-row-main:hover .album-row-title { color: var(--grass); }
