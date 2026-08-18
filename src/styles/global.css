@@ -1116,3 +1116,23 @@ a:focus-visible, button:focus-visible {
 /* Pins: sage when the ball is in your court, bone when in theirs */
 .note-pin.pin-mine { background: var(--grass); }
 .note-pin.pin-theirs { background: var(--bone); }
+
+/* Reply boxes grow when you are actually writing in them */
+.note-reply-form textarea, .notes-reply-form textarea {
+  min-height: 3.2rem;
+  transition: min-height 0.2s ease;
+}
+.note-reply-form textarea:focus, .notes-reply-form textarea:focus {
+  min-height: 9rem;
+  font-size: 0.9rem;
+  outline: 1px solid var(--grass);
+}
+.notes-reply-form { max-width: 640px; }
+
+/* Grouped notes: whose court, at a glance */
+.card.group-mine { border-left: 3px solid var(--grass); }
+.card.group-mine .group-title { color: var(--grass); }
+.card.group-theirs { border-left: 3px solid rgba(232, 228, 218, 0.35); }
+.card.group-theirs .group-title { color: var(--bone); }
+.card.group-done { opacity: 0.75; }
+a.note-signout { text-decoration: none; display: inline-flex; align-items: center; }

@@ -3,6 +3,7 @@ import { supabase, DEMO } from "../lib/supabase";
 import { getFeatured } from "../lib/data";
 import Photo from "../components/Photo";
 import { useTitle } from "../lib/title";
+import { SiteGuide } from "../admin/guide";
 
 // A draft, visible only when signed in: two shop concepts side by side so
 // Cate can compare them and pin notes right on this page. Nothing here is
@@ -51,6 +52,11 @@ export default function Shop() {
         parts you have opinions about.
       </div>
       <span className="label">Shop, two ways</span>
+      <SiteGuide to="/admin/notes" linkLabel="See the notes list">
+        This page is a decision aid, not a store. Two directions mocked up in the site&rsquo;s
+        real design: prints by email inquiry, and instant digital downloads. Add note on
+        anything here; those pins become the requirements for whichever version gets built.
+      </SiteGuide>
 
       <section className="shop-concepts">
         <div className="shop-card">

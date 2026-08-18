@@ -10,6 +10,7 @@ import { waitingOn, waitingLabel } from "../lib/waiting";
 // and the saved note pins there — visible on the page and in the studio.
 export default function FeedbackLayer() {
   const { pathname } = useLocation();
+  const onAdmin = pathname.startsWith("/admin");
   const [session, setSession] = useState(null);
   const [notes, setNotes] = useState([]);
   const [mode, setMode] = useState(false);
@@ -20,7 +21,6 @@ export default function FeedbackLayer() {
   const [openPin, setOpenPin] = useState(null);
   const [popPlace, setPopPlace] = useState({ below: false, align: "center" });
   const [replyText, setReplyText] = useState("");
-  const [replyStatus, setReplyStatus] = useState("");
   const [drawer, setDrawer] = useState(false);
   const [docHeight, setDocHeight] = useState(0);
 
@@ -118,16 +118,18 @@ export default function FeedbackLayer() {
     load();
   }
 
-  async function saveReply(note) {
+  async function saveReply(note, resolveAfter = false) {
     if (!replyText.trim()) return;
     await supabase.from("note_replies").insert({
       note_id: note.id,
       reply: replyText.trim(),
-      status: replyStatus || null,
       author: session.user.email,
     });
+    if (resolveAfter) {
+      await supabase.from("site_notes").update({ resolved: true }).eq("id", note.id);
+      setOpenPin(null);
+    }
     setReplyText("");
-    setReplyStatus("");
     load();
   }
 
@@ -179,16 +181,13 @@ export default function FeedbackLayer() {
                 <span className="note-author">
                   {displayName(n.author)}
                   <span className={`waiting-chip${waitingOn(n, session.user.email).mine ? " mine" : ""}`}>
-                    {waitingLabel(waitingOn(n, session.user.email), displayName)}
+                    {waitingLabel(waitingOn(n, session.user.email), session.user.email)}
                   </span>
                 </span>
                 <span className="note-text">{n.note}</span>
                 {n.note_replies.map((r) => (
                   <span className="note-reply" key={r.id}>
-                    <span className="note-author">
-                      {displayName(r.author)}
-                      {r.status && <span className={`status-chip s-${r.status}`}>{r.status}</span>}
-                    </span>
+                    <span className="note-author">{displayName(r.author)}</span>
                     <span className="note-text">{r.reply}</span>
                   </span>
                 ))}
@@ -201,13 +200,10 @@ export default function FeedbackLayer() {
                       onChange={(e) => setReplyText(e.target.value)}
                     />
                     <span className="note-reply-row">
-                      <select value={replyStatus} onChange={(e) => setReplyStatus(e.target.value)}>
-                        <option value="">No status</option>
-                        <option value="Answered">Answered</option>
-                        <option value="Done">Done</option>
-                        <option value="Won't do">Won&apos;t do</option>
-                      </select>
                       <button onClick={() => saveReply(n)} disabled={!replyText.trim()}>Reply</button>
+                      <button onClick={() => saveReply(n, true)} disabled={!replyText.trim()}>
+                        Reply &amp; resolve
+                      </button>
                     </span>
                   </span>
                 ) : (
@@ -287,13 +283,12 @@ export default function FeedbackLayer() {
               </button>
               <span className="note-task-text">
                 <span className={`waiting-chip${waitingOn(n, session.user.email).mine ? " mine" : ""}`}>
-                  {waitingLabel(waitingOn(n, session.user.email), displayName)}
+                  {waitingLabel(waitingOn(n, session.user.email), session.user.email)}
                 </span>{" "}
                 {n.note}
                 {n.note_replies.map((r) => (
                   <span className="note-task-reply" key={r.id}>
-                    {displayName(r.author)}
-                    {r.status ? ` · ${r.status}` : ""}: {r.reply}
+                    {displayName(r.author)}: {r.reply}
                   </span>
                 ))}
               </span>
@@ -307,14 +302,21 @@ export default function FeedbackLayer() {
 
       {/* The toggles — present only when signed in */}
       <div className="note-controls">
-        <GuideToggle />
-        <button
-          className="note-signout"
-          title="Sign out and see the site as visitors do"
-          onClick={() => supabase.auth.signOut()}
-        >
-          Sign out
-        </button>
+        {!onAdmin && pathname !== "/shop" && (
+          <a href="/shop" className="note-signout" title="The shop mockup, visible only to us">
+            Shop draft
+          </a>
+        )}
+        {!onAdmin && <GuideToggle />}
+        {!onAdmin && (
+          <button
+            className="note-signout"
+            title="Sign out and see the site as visitors do"
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign out
+          </button>
+        )}
         {notes.length > 0 && (
           <button className={`note-signout${drawer ? " drawer-open" : ""}`} onClick={() => setDrawer(!drawer)}>
             Tasks ({notes.filter((x) => waitingOn(x, session.user.email).mine).length}/{notes.length})
@@ -324,7 +326,7 @@ export default function FeedbackLayer() {
           className={`note-toggle${mode ? " active" : ""}`}
           onClick={() => (mode || draft ? exitMode() : setMode(true))}
         >
-          {mode || draft ? "Cancel" : notes.length ? `Notes (${notes.length})` : "Leave a note"}
+          {mode || draft ? "Cancel" : "Add note"}
         </button>
       </div>
     </>

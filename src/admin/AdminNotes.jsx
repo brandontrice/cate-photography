@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import { Guide, GuideToggle } from "./guide";
 import { displayName } from "./names";
 import { waitingOn, waitingLabel } from "../lib/waiting";
+import { otherName } from "./names";
 
 export default function AdminNotes() {
   const [notes, setNotes] = useState([]);
@@ -11,7 +12,6 @@ export default function AdminNotes() {
 
   const [replyFor, setReplyFor] = useState(null);
   const [replyText, setReplyText] = useState("");
-  const [replyStatus, setReplyStatus] = useState("");
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -39,17 +39,18 @@ export default function AdminNotes() {
     load();
   }, [showResolved]);
 
-  async function saveReply(note) {
+  async function saveReply(note, resolveAfter = false) {
     if (!replyText.trim()) return;
     await supabase.from("note_replies").insert({
       note_id: note.id,
       reply: replyText.trim(),
-      status: replyStatus || null,
       author: session?.user?.email || null,
     });
+    if (resolveAfter) {
+      await supabase.from("site_notes").update({ resolved: true }).eq("id", note.id);
+    }
     setReplyFor(null);
     setReplyText("");
-    setReplyStatus("");
     load();
   }
 
@@ -73,11 +74,13 @@ export default function AdminNotes() {
         </div>
         <GuideToggle />
       </div>
-      <Guide to="/" linkLabel="Go leave one on the site">
-        Notes come from the &ldquo;Leave a note&rdquo; button on the site. Pin one to any
-        spot on any page while signed in, and it lands here. This list is the to-do pile.
-        The path link jumps to the page, Resolve clears the pin from the site, Reopen brings
-        it back, Delete removes it entirely.
+      <Guide to="/" linkLabel="Go add one on the site">
+        Add note pins a thought to any spot on any page, including the studio pages, and it
+        lands here. Notes sort by whose court the ball is in: an unanswered note waits on the
+        other person, and each reply flips it. A note holds at most two replies; after that,
+        start a fresh one. Reply answers and keeps it open. Reply &amp; resolve answers and
+        closes it in one go. Resolve closes without a reply, Reopen brings one back, Delete
+        removes it for good.
       </Guide>
       <div className="card">
         <label className="toggle">
@@ -93,9 +96,9 @@ export default function AdminNotes() {
         const my = session?.user?.email || "";
         const withState = notes.map((x) => ({ ...x, _w: waitingOn(x, my) }));
         const groups = [
-          { title: "Waiting on you", items: withState.filter((x) => !x.resolved && x._w.mine) },
-          { title: "Waiting on them", items: withState.filter((x) => !x.resolved && !x._w.mine) },
-          { title: "Resolved", items: withState.filter((x) => x.resolved) },
+          { title: "Waiting on you", cls: "group-mine", items: withState.filter((x) => !x.resolved && x._w.mine) },
+          { title: `Waiting on ${otherName(my)}`, cls: "group-theirs", items: withState.filter((x) => !x.resolved && !x._w.mine) },
+          { title: "Resolved", cls: "group-done", items: withState.filter((x) => x.resolved) },
         ].filter((g) => g.items.length > 0);
         return groups.length === 0 ? (
           <div className="card">
@@ -106,8 +109,8 @@ export default function AdminNotes() {
           </div>
         ) : (
           groups.map((g) => (
-            <div className="card" key={g.title}>
-              <span className="label">{g.title}</span>
+            <div className={`card ${g.cls}`} key={g.title}>
+              <span className="label group-title">{g.title}</span>
               {g.items.map((n) => renderNote(n))}
             </div>
           ))
@@ -125,15 +128,13 @@ export default function AdminNotes() {
               </div>
               {n.note_replies.map((r) => (
                 <div className="notes-list-reply" key={r.id}>
-                  <span className="note-author">{displayName(r.author)}</span>
-                  {r.status && <span className={`status-chip s-${r.status}`}>{r.status}</span>}{" "}
-                  {r.reply}
+                  <span className="note-author">{displayName(r.author)}</span> {r.reply}
                 </div>
               ))}
               <div className="hint">
                 {!n.resolved && (
                   <span className={`waiting-chip${n._w.mine ? " mine" : ""}`}>
-                    {waitingLabel(n._w, displayName)}
+                    {waitingLabel(n._w, session?.user?.email)}
                   </span>
                 )}{" "}
                 <a href={n.path} target="_blank" rel="noreferrer" className="preview-link">
@@ -152,13 +153,10 @@ export default function AdminNotes() {
                     onChange={(e) => setReplyText(e.target.value)}
                   />
                   <div className="note-reply-row">
-                    <select value={replyStatus} onChange={(e) => setReplyStatus(e.target.value)}>
-                      <option value="">No status</option>
-                      <option value="Answered">Answered</option>
-                      <option value="Done">Done</option>
-                      <option value="Won't do">Won&apos;t do</option>
-                    </select>
                     <button onClick={() => saveReply(n)} disabled={!replyText.trim()}>Reply</button>
+                    <button onClick={() => saveReply(n, true)} disabled={!replyText.trim()}>
+                      Reply &amp; resolve
+                    </button>
                     <button className="ghost" onClick={() => setReplyFor(null)}>Cancel</button>
                   </div>
                 </div>
@@ -169,8 +167,7 @@ export default function AdminNotes() {
                   onClick={() => {
                     setReplyFor(n.id);
                     setReplyText("");
-                    setReplyStatus("");
-                  }}
+                                  }}
                 >
                   Reply
                 </button>

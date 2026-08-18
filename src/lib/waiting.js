@@ -5,6 +5,8 @@
 // (you wrote it, nobody replied) waits on you. A full thread waits on its
 // originator to resolve.
 
+import { displayName, otherName } from "../admin/names";
+
 export function waitingOn(note, myEmail) {
   const me = (myEmail || "").toLowerCase();
   const replies = note.note_replies || [];
@@ -18,14 +20,14 @@ export function waitingOn(note, myEmail) {
       mine: (note.author || "").toLowerCase() === me,
     };
   }
-  if (replies.length === 0 && last === me) {
-    // My own note with no reply yet: a reminder to me until someone answers.
-    return { key: "reply", email: myEmail, mine: true };
-  }
+  // Pure court rule: an unanswered note waits on whoever did not write the
+  // last message. Questions land in the other person's queue, which is the
+  // common case; notes-to-self flip back the moment anyone replies.
   return { key: "reply", email: last === me ? null : lastAuthor, mine: last !== me };
 }
 
-export function waitingLabel(w, displayName) {
-  if (w.key === "resolve") return w.mine ? "You resolve" : `${displayName(w.email)} resolves`;
-  return w.mine ? "Waiting on you" : `Waiting on ${displayName(w.email)}`;
+export function waitingLabel(w, myEmail) {
+  const other = w.email ? displayName(w.email) : otherName(myEmail);
+  if (w.key === "resolve") return w.mine ? "You resolve" : `${other} resolves`;
+  return w.mine ? "Waiting on you" : `Waiting on ${other}`;
 }

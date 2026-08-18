@@ -37,7 +37,7 @@ export default function App() {
         <Route path="/admin/*" element={<Admin />} />
       </Routes>
       {!isAdmin && <Footer />}
-      {!isAdmin && <FeedbackLayer />}
+      <FeedbackLayer />
     </GuideProvider>
   );
 }

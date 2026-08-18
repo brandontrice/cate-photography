@@ -13,3 +13,12 @@ export function displayName(email) {
   const raw = email.split("@")[0].split(/[._-]/)[0];
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
+
+// The other half of the two-person team, for "waiting on" labels.
+export function otherName(myEmail) {
+  const me = (myEmail || "").toLowerCase();
+  for (const [email, name] of Object.entries(NAMES)) {
+    if (email !== me) return name;
+  }
+  return "them";
+}

@@ -266,7 +266,8 @@ export default function AdminAlbum() {
         The caption and place lines appear under it on the site in small type. &ldquo;Use as
         cover&rdquo; makes it the face of this collection on the Work page. Remove deletes it
         for good, and it asks first. In Featured, the Wall badges mark which photos hang on
-        the home page.
+        the home page. The collection title above is clickable: rename it any time, the web
+        address follows the new name, and every old link quietly redirects.
       </Guide>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>

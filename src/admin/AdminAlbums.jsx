@@ -202,7 +202,8 @@ export default function AdminAlbums() {
           and that order is exactly the order visitors see. Featured is pinned because it is
           the home page rather than a page of its own. Preview opens a collection the way a
           visitor sees it, and drafts get a banner only we can see. The Published switch is
-          the only thing standing between a draft and the public.
+          the only thing standing between a draft and the public. To rename a collection,
+          open it and click its title.
         </Guide>
         {albums.length === 0 && <p className="msg">No collections yet. Create the first one above.</p>}
         {featured && <PinnedAlbumRow album={featured} onTogglePublish={togglePublish} />}
