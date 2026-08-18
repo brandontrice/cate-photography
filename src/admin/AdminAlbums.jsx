@@ -10,8 +10,16 @@ function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+// Known accounts — email (lowercase) to the name the studio greets.
+const NAMES = {
+  "cates-email@example.com": "Cate",
+  "brandons-email@example.com": "Brandon",
+};
+
 function firstName(email) {
   if (!email) return "there";
+  const known = NAMES[email.toLowerCase()];
+  if (known) return known;
   const raw = email.split("@")[0].split(/[._-]/)[0];
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
