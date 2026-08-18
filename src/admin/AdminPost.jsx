@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { publicUrl } from "../lib/data";
-import { Guide, GuideToggle } from "./guide";
+import { Guide } from "./guide";
+import { logAction } from "../lib/log";
 
 export default function AdminPost() {
   const { postId } = useParams();
@@ -36,6 +37,7 @@ export default function AdminPost() {
       .from("posts")
       .update({ title: title.trim() || post.title, body, cover_photo_id: cover || null })
       .eq("id", postId);
+    logAction("edited entry", title.trim() || post.title);
     setDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -52,12 +54,9 @@ export default function AdminPost() {
           <Link to="/admin/posts" className="label">← Field Notes</Link>
           <h1>{post.title}</h1>
         </div>
-        <span style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <GuideToggle />
-          <a className="hint preview-link" href={`/journal/${post.slug}`} target="_blank" rel="noreferrer">
-            Preview ↗
-          </a>
-        </span>
+        <a className="hint preview-link" href={`/journal/${post.slug}`} target="_blank" rel="noreferrer">
+          Preview ↗
+        </a>
       </div>
       <Guide>
         Write like a letter. A blank line starts a new paragraph. Paste an Instagram or

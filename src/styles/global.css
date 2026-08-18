@@ -12,7 +12,7 @@
   --grass: #a9906c;      /* dried grass — focus rings, hover only */
 
   --serif: "Cormorant Garamond", Georgia, serif;
-  --sans: "Archivo", system-ui, sans-serif;
+  --sans: "Karla", system-ui, sans-serif;
 
   --measure: 62ch;
   --gutter: clamp(1.25rem, 4vw, 3rem);
@@ -47,7 +47,7 @@ a:focus-visible, button:focus-visible {
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.2em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--lichen);
 }
 
@@ -85,7 +85,7 @@ a:focus-visible, button:focus-visible {
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.2em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--bone);
   opacity: 0.75;
   transition: opacity 0.3s ease;
@@ -165,7 +165,7 @@ a:focus-visible, button:focus-visible {
   font-size: 0.6875rem;
   font-weight: 400;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--faint);
 }
 
@@ -246,7 +246,7 @@ a:focus-visible, button:focus-visible {
   font-family: var(--sans);
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 /* ————————————————————————————————
@@ -368,7 +368,7 @@ a:focus-visible, button:focus-visible {
   font-family: var(--sans);
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--faint);
   cursor: default;
   white-space: nowrap;
@@ -424,7 +424,7 @@ a:focus-visible, button:focus-visible {
   color: var(--ink);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   padding: 0.15rem 0.4rem;
 }
 
@@ -508,7 +508,7 @@ a:focus-visible, button:focus-visible {
   font-family: var(--sans);
   font-size: 0.625rem;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--faint);
 }
 
@@ -619,6 +619,8 @@ a:focus-visible, button:focus-visible {
   top: 0;
   left: 0;
   width: 100%;
+  height: 0;
+  overflow: visible;
   z-index: 54;
   pointer-events: none;
 }
@@ -750,7 +752,7 @@ a:focus-visible, button:focus-visible {
   color: var(--grass);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   padding: 0.15rem 0.4rem;
 }
 
@@ -909,7 +911,7 @@ a:focus-visible, button:focus-visible {
   font-size: 0.6rem;
   font-weight: 500;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--ink);
   background: var(--grass);
   padding: 0.2rem 0.45rem;
@@ -960,7 +962,7 @@ a:focus-visible, button:focus-visible {
   font-style: normal;
   font-size: 0.65rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--faint);
   vertical-align: middle;
   margin-left: 0.6rem;
@@ -986,7 +988,7 @@ a:focus-visible, button:focus-visible {
   font-size: 0.68rem;
   font-weight: 500;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--lichen);
   margin-right: 0.5rem;
 }
@@ -999,7 +1001,7 @@ a:focus-visible, button:focus-visible {
   background: var(--surface);
   border: 1px solid var(--grass);
   color: var(--grass);
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 .note-reply {
   display: block;
@@ -1100,7 +1102,7 @@ a:focus-visible, button:focus-visible {
   font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   padding: 0.14rem 0.45rem;
   border: 1px solid var(--line);
   color: var(--muted);
@@ -1284,7 +1286,7 @@ body { animation: breathe 90s ease-in-out infinite; }
   font-family: var(--sans);
   font-size: 0.75rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   padding: 0.6rem 1.4rem;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
@@ -1406,7 +1408,7 @@ body { animation: breathe 90s ease-in-out infinite; }
   font-family: var(--sans);
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   cursor: pointer;
   padding: 0;
   transition: color 0.25s ease;
@@ -1454,3 +1456,52 @@ a.studio-tile:hover { border-color: var(--grass); }
   place-items: center;
 }
 .tile-static .guide-toggle { justify-self: start; margin-top: 0.15rem; }
+
+/* ————————————————————————————————
+   V9 — lowercase voice, area tabs, tools cluster, activity
+   ———————————————————————————————— */
+button, .navlink, .studio-nav-link, .preview-link { text-transform: lowercase; }
+
+.nav-divider {
+  width: 1px;
+  height: 0.9rem;
+  background: var(--line);
+  align-self: center;
+}
+
+.area-tabs {
+  display: flex;
+  gap: 1.5rem;
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  margin: 0.5rem 0 1.5rem;
+  padding-bottom: 0.7rem;
+}
+.area-tab {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--muted);
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color 0.25s ease;
+}
+a.area-tab:hover { color: var(--bone); }
+.area-tab.current { color: var(--grass); }
+.area-tab.quiet { font-size: 1rem; margin-left: auto; }
+
+.tools-hide {
+  background: transparent;
+  border: none;
+  color: var(--faint);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.4rem 0.3rem;
+  cursor: pointer;
+}
+.tools-hide:hover { color: var(--bone); }
+.tools-show { opacity: 0.7; }
+
+.activity-row { align-items: baseline; font-size: 0.85rem; color: var(--muted); }
+.activity-when { white-space: nowrap; margin-left: 1rem; }

@@ -6,7 +6,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
 import { publicUrl, getWallLayout, openingCount } from "../lib/data";
 import { prepareUpload } from "../lib/images";
-import { Guide, GuideToggle } from "./guide";
+import { Guide } from "./guide";
+import { logAction } from "../lib/log";
 
 const BUCKET = "photos";
 
@@ -76,6 +77,7 @@ export default function AdminAlbum() {
     // Featured keeps its slug no matter the title: the home page finds it by that key.
     if (album.slug === "featured") {
       await supabase.from("albums").update({ title: nextTitle }).eq("id", album.id);
+      logAction("renamed collection", `${album.title} to ${nextTitle}`);
       setEditingTitle(false);
       return load();
     }
@@ -100,6 +102,7 @@ export default function AdminAlbum() {
       .from("albums")
       .update({ title: nextTitle, slug: nextSlug })
       .eq("id", album.id);
+    logAction("renamed collection", `${album.title} to ${nextTitle}`, `address moved to /work/${nextSlug}`);
     setEditingTitle(false);
     load();
   }
@@ -112,12 +115,14 @@ export default function AdminAlbum() {
 
   async function saveEditor() {
     await supabase.from("photos").update({ caption, place }).eq("id", selected.id);
+    logAction("edited a caption in", album.title, caption);
     setSelected(null);
     load();
   }
 
   async function setCover() {
     await supabase.from("albums").update({ cover_photo_id: selected.id }).eq("id", albumId);
+    logAction("changed the cover of", album.title);
     setSelected(null);
     load();
   }
@@ -129,6 +134,7 @@ export default function AdminAlbum() {
       .from(BUCKET)
       .remove([p.path_sm, p.path_md, p.path_lg].filter(Boolean));
     await supabase.from("photos").delete().eq("id", p.id);
+    logAction("removed a photo from", album.title, p.caption || "");
     setSelected(null);
     load();
   }
@@ -167,6 +173,7 @@ export default function AdminAlbum() {
       });
     }
     setStatus(list.length ? `${list.length} photo${list.length === 1 ? "" : "s"} added.` : "");
+    if (list.length) logAction("added photos to", album.title, `${list.length} photo${list.length === 1 ? "" : "s"}`);
     load();
   }
 
@@ -179,6 +186,7 @@ export default function AdminAlbum() {
     await Promise.all(
       next.map((p, i) => supabase.from("photos").update({ sort_order: i }).eq("id", p.id))
     );
+    logAction("reordered photos in", album.title);
   }
 
   if (!album) return <main className="admin" />;
@@ -218,12 +226,9 @@ export default function AdminAlbum() {
             </h1>
           )}
         </div>
-        <span style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <GuideToggle />
-          <a className="hint preview-link" href={`/work/${album.slug}`} target="_blank" rel="noreferrer">
-            Preview as visitor ↗
-          </a>
-        </span>
+        <a className="hint preview-link" href={`/work/${album.slug}`} target="_blank" rel="noreferrer">
+          Preview as visitor ↗
+        </a>
       </div>
 
       <Guide>

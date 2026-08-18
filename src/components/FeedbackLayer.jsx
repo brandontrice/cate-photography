@@ -22,6 +22,13 @@ export default function FeedbackLayer() {
   const [popPlace, setPopPlace] = useState({ below: false, align: "center" });
   const [replyText, setReplyText] = useState("");
   const [drawer, setDrawer] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(() => {
+    try { return localStorage.getItem("tools-open") !== "closed"; } catch { return true; }
+  });
+  function setTools(open) {
+    setToolsOpen(open);
+    try { localStorage.setItem("tools-open", open ? "open" : "closed"); } catch { /* fine */ }
+  }
   const [docHeight, setDocHeight] = useState(0);
 
   useEffect(() => {
@@ -150,7 +157,7 @@ export default function FeedbackLayer() {
   return (
     <>
       {/* Saved pins + the provisional pin while drafting */}
-      <div className="note-pins" style={{ height: docHeight }}>
+      <div className="note-pins">
         {notes.map((n, i) => (
           <button
             key={n.id}
@@ -300,29 +307,43 @@ export default function FeedbackLayer() {
         </aside>
       )}
 
-      {/* The toggles — present only when signed in */}
+      {/* Dev tools cluster: guide, notes, tasks, add note, sign out. Hideable. */}
       <div className="note-controls">
-        {!onAdmin && <GuideToggle />}
-        {!onAdmin && (
-          <button
-            className="note-signout"
-            title="Sign out and see the site as visitors do"
-            onClick={() => supabase.auth.signOut()}
-          >
-            Sign out
+        {toolsOpen ? (
+          <>
+            <GuideToggle />
+            <a href="/admin/notes" className="note-signout" title="The notes list in the studio">
+              notes
+            </a>
+            {notes.length > 0 && (
+              <button className={`note-signout${drawer ? " drawer-open" : ""}`} onClick={() => setDrawer(!drawer)}>
+                tasks ({notes.filter((x) => waitingOn(x, session.user.email).mine).length}/{notes.length})
+              </button>
+            )}
+            <button
+              className={`note-toggle${mode ? " active" : ""}`}
+              onClick={() => (mode || draft ? exitMode() : setMode(true))}
+            >
+              {mode || draft ? "cancel" : "add note"}
+            </button>
+            {!onAdmin && (
+              <button
+                className="note-signout"
+                title="Sign out and see the site as visitors do"
+                onClick={() => supabase.auth.signOut()}
+              >
+                sign out
+              </button>
+            )}
+            <button className="tools-hide" title="Hide these tools" onClick={() => setTools(false)}>
+              ×
+            </button>
+          </>
+        ) : (
+          <button className="note-signout tools-show" onClick={() => setTools(true)}>
+            tools
           </button>
         )}
-        {notes.length > 0 && (
-          <button className={`note-signout${drawer ? " drawer-open" : ""}`} onClick={() => setDrawer(!drawer)}>
-            Tasks ({notes.filter((x) => waitingOn(x, session.user.email).mine).length}/{notes.length})
-          </button>
-        )}
-        <button
-          className={`note-toggle${mode ? " active" : ""}`}
-          onClick={() => (mode || draft ? exitMode() : setMode(true))}
-        >
-          {mode || draft ? "Cancel" : "Add note"}
-        </button>
       </div>
     </>
   );

@@ -6,8 +6,8 @@ import "@fontsource/cormorant-garamond/300.css";
 import "@fontsource/cormorant-garamond/300-italic.css";
 import "@fontsource/cormorant-garamond/400.css";
 import "@fontsource/cormorant-garamond/400-italic.css";
-import "@fontsource/archivo/400.css";
-import "@fontsource/archivo/500.css";
+import "@fontsource/karla/400.css";
+import "@fontsource/karla/500.css";
 import "./styles/global.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

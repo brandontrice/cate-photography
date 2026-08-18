@@ -16,17 +16,18 @@ export default function Nav() {
     <nav className="nav">
       <Link to="/" className="wordmark">Cate</Link>
       <ul>
-        <li><NavLink className="navlink" to="/work">Work</NavLink></li>
-        <li><NavLink className="navlink" to="/journal">Field Notes</NavLink></li>
-        <li><NavLink className="navlink" to="/about">About</NavLink></li>
-        <li><NavLink className="navlink" to="/contact">Contact</NavLink></li>
+        <li><NavLink className="navlink" to="/work">work</NavLink></li>
         {!DEMO && session && (
           <li>
             <NavLink className="navlink navlink-draft" to="/shop" title="Visible only to us">
-              Shop draft
+              shop draft
             </NavLink>
           </li>
         )}
+        <li><NavLink className="navlink" to="/about">about</NavLink></li>
+        <li><NavLink className="navlink" to="/contact">contact</NavLink></li>
+        <li className="nav-divider" aria-hidden="true" />
+        <li><NavLink className="navlink" to="/journal">field notes</NavLink></li>
       </ul>
     </nav>
   );

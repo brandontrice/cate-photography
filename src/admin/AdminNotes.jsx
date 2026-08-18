@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { Guide, GuideToggle } from "./guide";
+import { Guide } from "./guide";
 import { displayName } from "./names";
 import { waitingOn, waitingLabel } from "../lib/waiting";
 import { otherName } from "./names";
@@ -67,13 +67,8 @@ export default function AdminNotes() {
 
   return (
     <main className="admin">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <div>
-          <Link to="/admin" className="label">← Collections</Link>
-          <h1>Notes</h1>
-        </div>
-        <GuideToggle />
-      </div>
+      <Link to="/admin" className="label">← studio</Link>
+      <h1>Notes</h1>
       <Guide to="/" linkLabel="Go add one on the site">
         Add note pins a thought to any spot on any page, including the studio pages, and it
         lands here. Notes sort by whose court the ball is in: an unanswered note waits on the

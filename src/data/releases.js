@@ -3,6 +3,18 @@
 // carries the current version.
 export const RELEASES = [
   {
+    version: "v9",
+    date: "August 18, 2026",
+    notes: [
+      "The studio leads with the collections; field notes and activity live in tabs beneath the greeting.",
+      "The site speaks lowercase now, in a warmer small type (Karla).",
+      "Dev tools gathered in the bottom corner: guide, notes, tasks, add note, sign out. The x hides them; tools brings them back.",
+      "An activity log records every studio change, readable under the activity tab.",
+      "The menu reads work, shop draft, about, contact, then field notes past the divider.",
+      "Fixed the long empty scroll after the footer on short pages.",
+    ],
+  },
+  {
     version: "v8",
     date: "August 18, 2026",
     notes: [

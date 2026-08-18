@@ -36,7 +36,7 @@ export function GuideToggle() {
   const [on, toggle] = useGuide();
   return (
     <button className={`ghost guide-toggle${on ? " on" : ""}`} onClick={toggle}>
-      {on ? "Guide on" : "Guide"}
+      {on ? "guide off" : "guide on"}
     </button>
   );
 }

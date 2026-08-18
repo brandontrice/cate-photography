@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { Guide, GuideToggle } from "./guide";
+import { Guide } from "./guide";
+import { logAction } from "../lib/log";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -32,6 +33,7 @@ export default function AdminPosts() {
       .insert({ title: title.trim(), slug: slugify(title) })
       .select()
       .single();
+    logAction("created entry", title.trim());
     setTitle("");
     setBusy(false);
     if (data) window.location.href = `/admin/posts/${data.id}`;
@@ -45,17 +47,18 @@ export default function AdminPosts() {
         published_at: !p.published ? new Date().toISOString() : p.published_at,
       })
       .eq("id", p.id);
+    logAction(p.published ? "unpublished entry" : "published entry", p.title);
     load();
   }
 
   return (
     <main className="admin">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <div>
-          <Link to="/admin" className="label">← Studio</Link>
-          <h1>Field Notes</h1>
-        </div>
-        <GuideToggle />
+      <Link to="/admin" className="label">← studio</Link>
+      <h1>Field Notes</h1>
+      <div className="area-tabs">
+        <Link to="/admin" className="area-tab">collections</Link>
+        <span className="area-tab current">field notes</span>
+        <Link to="/admin/activity" className="area-tab quiet">activity</Link>
       </div>
       <Guide to="/journal" linkLabel="See Field Notes on the site">
         Entries start as drafts. Write in plain sentences; a blank line starts a new

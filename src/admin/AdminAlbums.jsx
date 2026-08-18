@@ -5,9 +5,9 @@ import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } 
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
 import { publicUrl, WALL_LAYOUTS, getWallLayout, setWallLayout } from "../lib/data";
-import { Guide, GuideToggle } from "./guide";
+import { Guide } from "./guide";
+import { logAction } from "../lib/log";
 import { displayName as firstName } from "./names";
-import { waitingOn } from "../lib/waiting";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -125,7 +125,6 @@ export default function AdminAlbums() {
   const [busy, setBusy] = useState(false);
   const [layout, setLayout] = useState("anchor-right");
   const [layoutSaved, setLayoutSaved] = useState(false);
-  const [notesMine, setNotesMine] = useState(0);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   async function load() {
@@ -141,20 +140,13 @@ export default function AdminAlbums() {
   useEffect(() => {
     load();
     getWallLayout().then(setLayout).catch(() => {});
-    supabase.auth.getSession().then(async ({ data }) => {
-      const my = data.session?.user?.email || "";
-      setEmail(my);
-      const { data: open } = await supabase
-        .from("site_notes")
-        .select("*, note_replies(*)")
-        .eq("resolved", false);
-      setNotesMine((open || []).filter((x) => waitingOn(x, my).mine).length);
-    });
+    supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user?.email || ""));
   }, []);
 
   async function changeLayout(value) {
     setLayout(value);
     await setWallLayout(value);
+    logAction("changed home page opening", "", value);
     setLayoutSaved(true);
     setTimeout(() => setLayoutSaved(false), 2000);
   }
@@ -168,6 +160,7 @@ export default function AdminAlbums() {
       sort_order: albums.length,
       published: false,
     });
+    logAction("created collection", title.trim());
     setTitle("");
     setBusy(false);
     load();
@@ -175,6 +168,7 @@ export default function AdminAlbums() {
 
   async function togglePublish(album) {
     await supabase.from("albums").update({ published: !album.published }).eq("id", album.id);
+    logAction(album.published ? "hid collection" : "published collection", album.title);
     load();
   }
 
@@ -190,6 +184,7 @@ export default function AdminAlbums() {
     await Promise.all(
       next.map((a, i) => supabase.from("albums").update({ sort_order: i + 1 }).eq("id", a.id))
     );
+    logAction("reordered collections");
   }
 
   const featuredAlbum = albums.find((x) => x.slug === "featured");
@@ -222,25 +217,10 @@ export default function AdminAlbums() {
         </nav>
       </header>
 
-      <div className="studio-tiles">
-        <Link to="/admin/posts" className="studio-tile">
-          <span className="tile-title">Field Notes</span>
-          <span className="hint">Write and publish entries</span>
-        </Link>
-        <Link to="/admin/notes" className="studio-tile">
-          <span className="tile-title">
-            Notes {notesMine > 0 && <span className="tile-badge">{notesMine}</span>}
-          </span>
-          <span className="hint">{notesMine > 0 ? "Waiting on you" : "All caught up"}</span>
-        </Link>
-        <Link to="/admin/reset" className="studio-tile">
-          <span className="tile-title">Password</span>
-          <span className="hint">Change yours any time</span>
-        </Link>
-        <span className="studio-tile tile-static">
-          <span className="tile-title">Guide</span>
-          <GuideToggle />
-        </span>
+      <div className="area-tabs">
+        <span className="area-tab current">collections</span>
+        <Link to="/admin/posts" className="area-tab">field notes</Link>
+        <Link to="/admin/activity" className="area-tab quiet">activity</Link>
       </div>
 
       <div className="card">
