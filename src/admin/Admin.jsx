@@ -38,7 +38,16 @@ export default function Admin() {
     return (
       <main className="admin">
         <h1>The studio</h1>
-        <div className="card" style={{ maxWidth: 420 }}>
+        <form
+          className="card"
+          style={{ maxWidth: 420 }}
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setError("");
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) setError(error.message);
+          }}
+        >
           <input
             type="email"
             placeholder="Email"
@@ -53,17 +62,9 @@ export default function Admin() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-          <button
-            onClick={async () => {
-              setError("");
-              const { error } = await supabase.auth.signInWithPassword({ email, password });
-              if (error) setError(error.message);
-            }}
-          >
-            Sign in
-          </button>
+          <button type="submit">Sign in</button>
           {error && <p className="msg">{error}</p>}
-        </div>
+        </form>
       </main>
     );
 
