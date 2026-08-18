@@ -1,0 +1,482 @@
+/* ————————————————————————————————
+   Tokens — forest at dusk
+   ———————————————————————————————— */
+:root {
+  --ink: #131614;        /* page — near-black with a green undertone */
+  --surface: #1a1e1b;    /* cards, admin panels */
+  --bone: #e8e4da;       /* warm off-white */
+  --muted: rgba(232, 228, 218, 0.6);
+  --faint: rgba(232, 228, 218, 0.32);
+  --line: rgba(232, 228, 218, 0.12);
+  --lichen: #8b948a;     /* sage — captions, small accents */
+  --grass: #a9906c;      /* dried grass — focus rings, hover only */
+
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Archivo", system-ui, sans-serif;
+
+  --measure: 62ch;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.125rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible {
+  outline: 1px solid var(--grass);
+  outline-offset: 4px;
+}
+
+/* Utility voice — small, letterspaced, patient */
+.label {
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lichen);
+}
+
+/* ————————————————————————————————
+   Nav
+   ———————————————————————————————— */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1.5rem var(--gutter);
+  z-index: 10;
+  mix-blend-mode: difference;
+}
+
+.nav .wordmark {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+.nav ul {
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav a.navlink {
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone);
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+.nav a.navlink:hover, .nav a.navlink[aria-current="page"] { opacity: 1; }
+
+/* ————————————————————————————————
+   Hero — one image, full breath
+   ———————————————————————————————— */
+.hero {
+  height: 100svh;
+  position: relative;
+  display: grid;
+  place-items: end start;
+  overflow: hidden;
+}
+
+.hero .hero-img {
+  position: absolute;
+  inset: 0;
+}
+.hero .hero-img img, .hero .hero-img .ph {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero .hero-foot {
+  position: relative;
+  padding: 2.5rem var(--gutter);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: linear-gradient(to top, rgba(19, 22, 20, 0.75), transparent);
+}
+
+.hero .hero-line {
+  font-style: italic;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  color: var(--bone);
+}
+
+/* ————————————————————————————————
+   Gallery flow — a walk, not a feed
+   ———————————————————————————————— */
+.flow {
+  padding: 16vh var(--gutter);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.flow-head {
+  margin-bottom: 10vh;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+.flow-head::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--line);
+}
+
+.piece {
+  margin: 0 0 18vh;
+}
+.piece:nth-child(odd)  { width: min(100%, 720px); margin-right: auto; }
+.piece:nth-child(even) { width: min(100%, 620px); margin-left: auto; }
+
+.piece figcaption {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* The signature: frames develop like a print */
+.photo {
+  position: relative;
+  background: var(--surface);
+  overflow: hidden;
+}
+.photo img, .photo .ph {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: blur(10px) brightness(0.65);
+  transform: scale(1.015);
+  transition: opacity 1.2s ease, filter 1.4s ease, transform 1.4s ease;
+}
+.photo.in img, .photo.in .ph {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .photo img, .photo .ph { transition: none; opacity: 1; filter: none; transform: none; }
+}
+
+/* Placeholder tone blocks (demo mode) */
+.ph { display: block; }
+
+/* ————————————————————————————————
+   Collections index
+   ———————————————————————————————— */
+.page { padding: 22vh var(--gutter) 14vh; max-width: 1100px; margin: 0 auto; }
+
+.collections { display: grid; gap: 5rem; margin-top: 8vh; }
+@media (min-width: 760px) { .collections { grid-template-columns: 1fr 1fr; } }
+
+.collection-card .photo { aspect-ratio: 4 / 3; }
+.collection-card h2 {
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.5rem;
+  margin: 1rem 0 0.15rem;
+}
+.collection-card:hover h2 { color: var(--grass); }
+.collection-card .count { color: var(--faint); }
+
+/* ————————————————————————————————
+   About / Contact
+   ———————————————————————————————— */
+.prose { max-width: var(--measure); }
+.prose p { margin: 0 0 1.4em; color: var(--muted); }
+.prose p:first-of-type { color: var(--bone); font-size: 1.3rem; }
+
+.contact-links { margin-top: 3rem; display: grid; gap: 0.75rem; }
+.contact-links a {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  transition: border-color 0.3s ease;
+}
+.contact-links a:hover { border-color: var(--grass); }
+
+/* ————————————————————————————————
+   Footer
+   ———————————————————————————————— */
+.footer {
+  padding: 4rem var(--gutter);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ————————————————————————————————
+   Admin — quiet workshop, same palette
+   ———————————————————————————————— */
+.admin { padding: 8rem var(--gutter) 6rem; max-width: 1100px; margin: 0 auto; font-family: var(--sans); font-size: 0.9rem; }
+.admin h1 { font-family: var(--serif); font-weight: 300; font-style: italic; font-size: 2rem; }
+
+.admin .card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.admin input[type="text"], .admin input[type="email"], .admin input[type="password"] {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  padding: 0.7rem 0.9rem;
+  font: inherit;
+  margin-bottom: 0.9rem;
+}
+.admin input:focus { outline: 1px solid var(--grass); }
+
+.admin button {
+  background: var(--bone);
+  color: var(--ink);
+  border: none;
+  padding: 0.65rem 1.2rem;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.admin button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.admin button.ghost:hover { color: var(--bone); border-color: var(--muted); }
+.admin button:disabled { opacity: 0.45; cursor: default; }
+
+.admin .row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+.admin .row:last-child { border-bottom: none; }
+
+.admin .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.admin .thumb {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+.admin .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.admin .thumb .del {
+  position: absolute; top: 0.4rem; right: 0.4rem;
+  background: rgba(19,22,20,0.8); color: var(--bone);
+  border: none; width: 1.6rem; height: 1.6rem; line-height: 1;
+  cursor: pointer;
+}
+.admin .dropzone {
+  border: 1px dashed var(--line);
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.admin .dropzone:hover, .admin .dropzone.over { border-color: var(--grass); color: var(--bone); }
+.admin .hint { color: var(--faint); font-size: 0.8rem; margin-top: 0.75rem; }
+.admin .msg { color: var(--lichen); margin-top: 0.9rem; }
+.admin .toggle { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--muted); }
+
+/* ————————————————————————————————
+   V2 — hero art direction
+   ———————————————————————————————— */
+/* Make the hero photo wrapper fill the frame; crop from the image, anchored low
+   so the road stays in view. */
+.hero .hero-img .photo {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto !important;
+}
+.hero .hero-img img {
+  object-position: center 78%;
+}
+
+/* Portrait hero by default; swap to the landscape frame on wide screens. */
+.hero-wide { display: none; }
+@media (min-aspect-ratio: 5/4) {
+  .hero-tall:has(+ .hero-wide) { display: none; }
+  .hero-wide { display: block; }
+  .hero .hero-img .hero-wide img { object-position: center 60%; }
+}
+
+/* ————————————————————————————————
+   V2 — footer socials
+   ———————————————————————————————— */
+.footer-social { display: flex; gap: 1.5rem; }
+.footer-social a { transition: color 0.3s ease; }
+.footer-social a:hover { color: var(--grass); }
+
+/* ————————————————————————————————
+   V2 — lightbox
+   ———————————————————————————————— */
+.piece { cursor: zoom-in; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(11, 13, 12, 0.96);
+  display: grid;
+  place-items: center;
+  padding: 3.5rem 1rem 4.5rem;
+  cursor: zoom-out;
+}
+.lightbox img {
+  max-width: min(94vw, 1400px);
+  max-height: calc(100vh - 8rem);
+  width: auto;
+  height: auto;
+  cursor: default;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+.lightbox-caption {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2rem;
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+  cursor: default;
+  white-space: nowrap;
+}
+.lightbox-nav, .lightbox-close {
+  position: absolute;
+  background: transparent;
+  border: none;
+  color: var(--bone);
+  opacity: 0.55;
+  font-size: 1.5rem;
+  font-family: var(--serif);
+  cursor: pointer;
+  padding: 1rem;
+  transition: opacity 0.25s ease;
+}
+.lightbox-nav:hover, .lightbox-close:hover { opacity: 1; }
+.lightbox-nav.prev { left: 0.5rem; top: 50%; transform: translateY(-50%); }
+.lightbox-nav.next { right: 0.5rem; top: 50%; transform: translateY(-50%); }
+.lightbox-close { top: 0.75rem; right: 0.75rem; font-size: 1.9rem; line-height: 1; }
+
+/* ————————————————————————————————
+   V2 — draft banner (preview mode)
+   ———————————————————————————————— */
+.draft-banner {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: var(--grass);
+  padding: 0.6rem 1rem;
+  margin-bottom: 3rem;
+}
+
+/* ————————————————————————————————
+   V2 — studio additions
+   ———————————————————————————————— */
+.drag-handle {
+  cursor: grab;
+  color: var(--faint);
+  padding-right: 0.75rem;
+  touch-action: none;
+  user-select: none;
+}
+.preview-link { white-space: nowrap; }
+.preview-link:hover { color: var(--bone); }
+
+.cover-badge {
+  position: absolute;
+  bottom: 0.4rem;
+  left: 0.4rem;
+  background: var(--grass);
+  color: var(--ink);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+}
+
+.editor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(11, 13, 12, 0.8);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.editor {
+  width: min(94vw, 460px);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.editor-img {
+  width: 100%;
+  max-height: 40vh;
+  object-fit: contain;
+  background: var(--ink);
+  margin-bottom: 1rem;
+}
+.editor-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.editor .danger { border-color: rgba(200, 90, 70, 0.5); color: rgba(220, 130, 110, 0.9); }
+.editor .danger:hover { border-color: rgba(220, 110, 90, 0.9); color: rgb(230, 140, 120); }
