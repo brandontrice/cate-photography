@@ -59,9 +59,10 @@ function greeting() {
 }
 
 function AlbumRowBody({ album, onTogglePublish }) {
+  const vis = album.photos.filter((p) => !p.hidden);
   const cover =
-    album.photos.find((p) => p.id === album.cover_photo_id) ||
-    [...album.photos].sort((a, b) => a.sort_order - b.sort_order)[0];
+    vis.find((p) => p.id === album.cover_photo_id) ||
+    [...vis].sort((a, b) => a.sort_order - b.sort_order)[0];
   return (
     <>
       <Link to={`/admin/${album.id}`} className="album-row-main">
@@ -72,6 +73,8 @@ function AlbumRowBody({ album, onTogglePublish }) {
           <span className="album-row-title">{album.title}</span>
           <span className="hint">
             {album.photos.length} photograph{album.photos.length === 1 ? "" : "s"}
+            {album.photos.some((p) => p.hidden) &&
+              ` · ${album.photos.filter((p) => p.hidden).length} hidden`}
             {album.slug === "featured" && " · the home page"}
           </span>
         </span>
@@ -131,7 +134,7 @@ export default function AdminAlbums() {
     const { data, error } = await supabase
       .from("albums")
       .select(
-        "id, title, slug, published, sort_order, cover_photo_id, photos:photos!photos_album_id_fkey(id, path_sm, sort_order)"
+        "id, title, slug, published, sort_order, cover_photo_id, photos:photos!photos_album_id_fkey(id, path_sm, sort_order, hidden)"
       )
       .order("sort_order");
     if (!error) setAlbums(data);
@@ -196,6 +199,7 @@ export default function AdminAlbums() {
     : [];
 
   const photoCount = albums.reduce((n, a) => n + a.photos.length, 0);
+  const hiddenCount = albums.reduce((n, a) => n + a.photos.filter((p) => p.hidden).length, 0);
   const publishedCount = albums.filter((a) => a.published).length;
 
   return (
@@ -209,6 +213,7 @@ export default function AdminAlbums() {
           <p className="studio-stats hint">
             {albums.length} collection{albums.length === 1 ? "" : "s"} · {photoCount} photograph
             {photoCount === 1 ? "" : "s"} · {publishedCount} published
+            {hiddenCount > 0 && ` · ${hiddenCount} hidden`}
           </p>
         </div>
         <nav className="studio-nav">

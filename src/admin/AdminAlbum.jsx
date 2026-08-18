@@ -30,6 +30,7 @@ function SortableThumb({ photo, isCover, wallSlot, onOpen }) {
       <img src={publicUrl(photo.path_sm)} alt={photo.caption || ""} draggable={false} />
       {isCover && <span className="cover-badge">Cover</span>}
       {wallSlot && <span className="wall-badge">{wallSlot}</span>}
+      {photo.hidden && <span className="wall-badge hidden-badge">hidden</span>}
     </div>
   );
 }
@@ -116,6 +117,14 @@ export default function AdminAlbum() {
   async function saveEditor() {
     await supabase.from("photos").update({ caption, place }).eq("id", selected.id);
     logAction("edited a caption in", album.title, caption);
+    setSelected(null);
+    load();
+  }
+
+  async function toggleHidden() {
+    const p = selected;
+    await supabase.from("photos").update({ hidden: !p.hidden }).eq("id", p.id);
+    logAction(p.hidden ? "unhid a photo in" : "hid a photo in", album.title, p.caption || "");
     setSelected(null);
     load();
   }
@@ -273,28 +282,35 @@ export default function AdminAlbum() {
         for good, and it asks first. In Featured, the badges mark the home page slots: Wall 1 is the
         tall anchor, Wall 2 the upper frame of the pair, Wall 3 the small accent, and in the
         One frame opening only the first photo shows. Drag photos here to change what lands
-        where. The collection title above is clickable: rename it any time, the web
+        where. Hide from the site keeps a photo here, dimmed, while visitors never see it; Show brings it back exactly where it was, and hidden photos give up their wall slot and cover role to the next visible one. The collection title above is clickable: rename it any time, the web
         address follows the new name, and every old link quietly redirects.
       </Guide>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={photos.map((p) => p.id)} strategy={rectSortingStrategy}>
           <div className="grid">
-            {photos.map((p, i) => (
-              <SortableThumb
-                key={p.id}
-                photo={p}
-                isCover={album.cover_photo_id === p.id}
-                wallSlot={
-                  album.slug === "featured" && i < openingCount(opening)
-                    ? opening === "one-frame"
-                      ? "Opening"
-                      : `Wall ${i + 1}`
-                    : null
+            {(() => {
+              const slots = {};
+              if (album.slug === "featured") {
+                let v = 0;
+                for (const p of photos) {
+                  if (p.hidden) continue;
+                  if (v < openingCount(opening)) {
+                    slots[p.id] = opening === "one-frame" ? "Opening" : `Wall ${v + 1}`;
+                  }
+                  v += 1;
                 }
-                onOpen={openEditor}
-              />
-            ))}
+              }
+              return photos.map((p) => (
+                <SortableThumb
+                  key={p.id}
+                  photo={p}
+                  isCover={album.cover_photo_id === p.id}
+                  wallSlot={slots[p.id] || null}
+                  onOpen={openEditor}
+                />
+              ));
+            })()}
           </div>
         </SortableContext>
       </DndContext>
@@ -321,7 +337,12 @@ export default function AdminAlbum() {
             />
             <div className="editor-actions">
               <button onClick={saveEditor}>Save</button>
-              <button className="ghost" onClick={setCover}>Use as cover</button>
+              <button className="ghost" onClick={toggleHidden}>
+                {selected.hidden ? "Show on the site" : "Hide from the site"}
+              </button>
+              {!selected.hidden && (
+                <button className="ghost" onClick={setCover}>Use as cover</button>
+              )}
               <button className="ghost danger" onClick={deleteSelected}>Remove photo</button>
             </div>
           </div>

@@ -30,7 +30,7 @@ export default function Work() {
             )}
             <h2>{a.title}</h2>
             <span className="count label">
-              {a.photos.length} photograph{a.photos.length === 1 ? "" : "s"}
+              {a.visibleCount} photograph{a.visibleCount === 1 ? "" : "s"}
             </span>
           </Link>
         ))}

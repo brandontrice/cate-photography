@@ -19,6 +19,7 @@ function shapePhoto(row) {
     height: row.height,
     caption: row.caption || "",
     place: row.place || "",
+    hidden: !!row.hidden,
   };
 }
 
@@ -26,16 +27,18 @@ function shapeAlbum(a) {
   const photos = (a.photos || [])
     .sort((x, y) => x.sort_order - y.sort_order)
     .map(shapePhoto);
-  const cover = photos.find((p) => p.id === a.cover_photo_id) || photos[0] || null;
-  return { ...a, photos, cover };
+  const visible = photos.filter((p) => !p.hidden);
+  const cover =
+    visible.find((p) => p.id === a.cover_photo_id) || visible[0] || null;
+  return { ...a, photos, cover, visibleCount: visible.length };
 }
 
 const ALBUM_SELECT =
-  "id, slug, title, published, sort_order, cover_photo_id, photos:photos!photos_album_id_fkey(id, path_sm, path_md, path_lg, width, height, caption, place, sort_order)";
+  "id, slug, title, published, sort_order, cover_photo_id, photos:photos!photos_album_id_fkey(id, path_sm, path_md, path_lg, width, height, caption, place, sort_order, hidden)";
 
 export async function getAlbums() {
   if (DEMO)
-    return sampleAlbums.map((a) => ({ ...a, cover: a.photos[0] || null }));
+    return sampleAlbums.map((a) => ({ ...a, cover: a.photos[0] || null, visibleCount: a.photos.length }));
   const { data, error } = await supabase
     .from("albums")
     .select(ALBUM_SELECT)
@@ -51,7 +54,7 @@ export async function getAlbums() {
 export async function getAlbum(slug) {
   if (DEMO) {
     const a = sampleAlbums.find((x) => x.slug === slug);
-    return a ? { ...a, cover: a.photos[0] || null } : null;
+    return a ? { ...a, cover: a.photos[0] || null, visibleCount: a.photos.length } : null;
   }
   const { data, error } = await supabase
     .from("albums")

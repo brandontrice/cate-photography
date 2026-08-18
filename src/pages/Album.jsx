@@ -54,8 +54,13 @@ export default function Album() {
         </span>
       </div>
       {album.photos.map((p, i) => (
-        <figure className="piece" key={p.id} onClick={() => setLb(i)}>
+        <figure
+          className={`piece${p.hidden ? " ghosted" : ""}`}
+          key={p.id}
+          onClick={() => setLb(i)}
+        >
           <Photo photo={p} sizes="(min-width: 760px) 720px, 100vw" />
+          {p.hidden && <span className="hidden-tag">hidden</span>}
           <figcaption>
             <span>{p.caption}</span>
             <span>{p.place}</span>

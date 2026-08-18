@@ -1675,3 +1675,22 @@ input[type="checkbox"] { accent-color: var(--grass); }
   .new-collection { flex-wrap: wrap; }
   .new-collection button { flex: 1; }
 }
+
+/* V13 — per-photo visibility */
+.piece.ghosted { opacity: 0.35; position: relative; }
+.hidden-tag, .hidden-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  padding: 0.15rem 0.45rem;
+  z-index: 2;
+}
+.wall-badge.hidden-badge { left: auto; }
+.thumb:has(.hidden-badge) img { opacity: 0.35; }

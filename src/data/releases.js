@@ -3,6 +3,15 @@
 // carries the current version.
 export const RELEASES = [
   {
+    version: "v13",
+    date: "August 18, 2026",
+    notes: [
+      "Photos can hide now. Hide from the site in a photo's editor keeps it in the studio, dimmed, while visitors never receive it at all; Show brings it back exactly where it was.",
+      "Hidden photos give up their wall slot and cover role to the next visible photo, public counts show only what visitors see, and signed-in eyes see hidden photos ghosted in place on the site.",
+      "The studio stats annotate the hidden, and every hide and show lands in the activity log.",
+    ],
+  },
+  {
     version: "v12",
     date: "August 18, 2026",
     notes: [

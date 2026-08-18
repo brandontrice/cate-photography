@@ -21,10 +21,15 @@ export default function Home() {
       .catch(console.error);
   }, []);
 
-  // The opening consumes 0, 1, or 3 Featured photos depending on the mode.
+  // The opening consumes 0, 1, or 3 visible Featured photos depending on the
+  // mode. Hidden photos (visible only to signed-in eyes) never take a slot;
+  // they appear ghosted in the flow instead.
   const count = openingCount(layout);
-  const wall = photos.slice(0, count);
-  const rest = photos.slice(count);
+  const visible = photos.filter((p) => !p.hidden);
+  const wall = visible.slice(0, count);
+  const wallIds = new Set(wall.map((p) => p.id));
+  const rest = photos.filter((p) => !wallIds.has(p.id));
+  const display = [...wall, ...rest];
 
   return (
     <main>
@@ -48,7 +53,7 @@ export default function Home() {
               <Link to={`/work/${a.slug}`} className="opening-index-item" key={a.id}>
                 <span className="opening-index-title">{a.title}</span>
                 <span className="label">
-                  {a.photos.length} photograph{a.photos.length === 1 ? "" : "s"}
+                  {a.visibleCount} photograph{a.visibleCount === 1 ? "" : "s"}
                 </span>
               </Link>
             ))}
@@ -83,8 +88,13 @@ export default function Home() {
           </span>
         </div>
         {rest.map((p, i) => (
-          <figure className="piece" key={p.id} onClick={() => setLb(i + wall.length)}>
+          <figure
+            className={`piece${p.hidden ? " ghosted" : ""}`}
+            key={p.id}
+            onClick={() => setLb(i + wall.length)}
+          >
             <Photo photo={p} sizes="(min-width: 760px) 720px, 100vw" />
+            {p.hidden && <span className="hidden-tag">hidden</span>}
             <figcaption>
               <span>{p.caption}</span>
               <span>{p.place}</span>
@@ -111,7 +121,7 @@ export default function Home() {
               )}
               <h2>{a.title}</h2>
               <span className="count label">
-                {a.photos.length} photograph{a.photos.length === 1 ? "" : "s"}
+                {a.visibleCount} photograph{a.visibleCount === 1 ? "" : "s"}
               </span>
             </Link>
           ))}
@@ -119,7 +129,7 @@ export default function Home() {
       </section>
 
       {lb !== null && (
-        <Lightbox photos={photos} index={lb} onClose={() => setLb(null)} onIndex={setLb} />
+        <Lightbox photos={display} index={lb} onClose={() => setLb(null)} onIndex={setLb} />
       )}
     </main>
   );
