@@ -4,12 +4,49 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
-import { publicUrl, getWallLayout, openingCount } from "../lib/data";
+import { publicUrl, getWallLayout, setWallLayout, openingCount, WALL_LAYOUTS } from "../lib/data";
 import { prepareUpload } from "../lib/images";
 import { Guide } from "./guide";
 import { logAction } from "../lib/log";
 
 const BUCKET = "photos";
+
+// Small living previews of each opening, drawn with this collection's photos.
+function MiniOpening({ value, thumbs }) {
+  const t = (i) =>
+    thumbs[i] ? <img src={thumbs[i]} alt="" draggable={false} /> : <span className="mini-ph" />;
+  if (value === "straight-in")
+    return (
+      <span className="mini mini-straight">
+        <span className="mini-type"><i /><i /><i /></span>
+        <span className="mini-peek">{t(0)}</span>
+      </span>
+    );
+  if (value === "one-frame")
+    return (
+      <span className="mini mini-one">
+        <span className="mini-type"><i /><i /><i /></span>
+        <span className="mini-frame">{t(0)}</span>
+      </span>
+    );
+  if (value === "row")
+    return (
+      <span className="mini mini-row">
+        <span className="mini-frame">{t(0)}</span>
+        <span className="mini-frame drop1">{t(1)}</span>
+        <span className="mini-frame drop2">{t(2)}</span>
+      </span>
+    );
+  return (
+    <span className={`mini mini-anchor${value === "anchor-left" ? " flip" : ""}`}>
+      <span className="mini-col">
+        <span className="mini-frame">{t(1)}</span>
+        <span className="mini-frame short">{t(2)}</span>
+      </span>
+      <span className="mini-frame tall">{t(0)}</span>
+    </span>
+  );
+}
 
 function SortableThumb({ photo, isCover, wallSlot, onOpen }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -119,6 +156,16 @@ export default function AdminAlbum() {
     logAction("edited a caption in", album.title, caption);
     setSelected(null);
     load();
+  }
+
+  const [openingSaved, setOpeningSaved] = useState(false);
+
+  async function changeOpening(value) {
+    setOpening(value);
+    await setWallLayout(value);
+    logAction("changed home page opening", "", value);
+    setOpeningSaved(true);
+    setTimeout(() => setOpeningSaved(false), 2000);
   }
 
   async function toggleHidden() {
@@ -246,6 +293,45 @@ export default function AdminAlbum() {
         sends only those, so pages load fast and storage stays light. The originals never
         leave the computer.
       </Guide>
+      {album.slug === "featured" && (
+        <div className="card">
+          <span className="label">
+            home page opening
+            <Guide to="/" linkLabel="See the opening on the home page">
+              The opening is filled from the front of this collection, in drag order. In the
+              wall modes photo 1 is the tall anchor, photo 2 the upper frame of the pair, and
+              photo 3 the small accent. One frame shows photo 1 alone. Straight in hangs no
+              photos and lists the collections beside the name instead. Pick a card and the
+              badges below update to match.
+            </Guide>
+          </span>
+          <div className="opening-grid">
+            {WALL_LAYOUTS.map((l) => (
+              <button
+                key={l.value}
+                type="button"
+                className={`opening-card${opening === l.value ? " current" : ""}`}
+                onClick={() => changeOpening(l.value)}
+              >
+                <MiniOpening
+                  value={l.value}
+                  thumbs={photos
+                    .filter((p) => !p.hidden)
+                    .slice(0, 3)
+                    .map((p) => publicUrl(p.path_sm))}
+                />
+                <span className="opening-caption">{l.label}</span>
+              </button>
+            ))}
+          </div>
+          <p className="hint">
+            Each card is a small preview drawn with the real photos. Click one to use it; it
+            applies immediately.
+            {openingSaved && <span className="msg"> Saved. The site updates on next load.</span>}
+          </p>
+        </div>
+      )}
+
       <div
         className={`dropzone${dragOver ? " over" : ""}`}
         onClick={() => fileInput.current.click()}

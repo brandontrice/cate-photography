@@ -4,50 +4,13 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
-import { publicUrl, WALL_LAYOUTS, getWallLayout, setWallLayout } from "../lib/data";
+import { publicUrl } from "../lib/data";
 import { Guide } from "./guide";
 import { logAction } from "../lib/log";
 import { displayName as firstName } from "./names";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
-
-// Small living previews of each opening, drawn with Featured's real photos.
-function MiniOpening({ value, thumbs }) {
-  const t = (i) =>
-    thumbs[i] ? <img src={thumbs[i]} alt="" draggable={false} /> : <span className="mini-ph" />;
-  if (value === "straight-in")
-    return (
-      <span className="mini mini-straight">
-        <span className="mini-type"><i /><i /><i /></span>
-        <span className="mini-peek">{t(0)}</span>
-      </span>
-    );
-  if (value === "one-frame")
-    return (
-      <span className="mini mini-one">
-        <span className="mini-type"><i /><i /><i /></span>
-        <span className="mini-frame">{t(0)}</span>
-      </span>
-    );
-  if (value === "row")
-    return (
-      <span className="mini mini-row">
-        <span className="mini-frame">{t(0)}</span>
-        <span className="mini-frame drop1">{t(1)}</span>
-        <span className="mini-frame drop2">{t(2)}</span>
-      </span>
-    );
-  return (
-    <span className={`mini mini-anchor${value === "anchor-left" ? " flip" : ""}`}>
-      <span className="mini-col">
-        <span className="mini-frame">{t(1)}</span>
-        <span className="mini-frame short">{t(2)}</span>
-      </span>
-      <span className="mini-frame tall">{t(0)}</span>
-    </span>
-  );
 }
 
 function greeting() {
@@ -126,8 +89,6 @@ export default function AdminAlbums() {
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
-  const [layout, setLayout] = useState("anchor-right");
-  const [layoutSaved, setLayoutSaved] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   async function load() {
@@ -142,17 +103,8 @@ export default function AdminAlbums() {
 
   useEffect(() => {
     load();
-    getWallLayout().then(setLayout).catch(() => {});
     supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user?.email || ""));
   }, []);
-
-  async function changeLayout(value) {
-    setLayout(value);
-    await setWallLayout(value);
-    logAction("changed home page opening", "", value);
-    setLayoutSaved(true);
-    setTimeout(() => setLayoutSaved(false), 2000);
-  }
 
   async function createAlbum() {
     if (!title.trim()) return;
@@ -189,14 +141,6 @@ export default function AdminAlbums() {
     );
     logAction("reordered collections");
   }
-
-  const featuredAlbum = albums.find((x) => x.slug === "featured");
-  const featuredThumbs = featuredAlbum
-    ? [...featuredAlbum.photos]
-        .sort((x, y) => x.sort_order - y.sort_order)
-        .slice(0, 3)
-        .map((p) => publicUrl(p.path_sm))
-    : [];
 
   const photoCount = albums.reduce((n, a) => n + a.photos.length, 0);
   const hiddenCount = albums.reduce((n, a) => n + a.photos.filter((p) => p.hidden).length, 0);
@@ -256,7 +200,8 @@ export default function AdminAlbums() {
           the home page rather than a page of its own. Preview opens a collection the way a
           visitor sees it, and drafts get a banner only we can see. The Published switch is
           the only thing standing between a draft and the public. To rename a collection,
-          open it and click its title.
+          open it and click its title. The home page opening is chosen inside Featured,
+          where the photos that fill it live.
         </Guide>
         {albums.length === 0 && <p className="msg">No collections yet. Create the first one above.</p>}
         {featured && <PinnedAlbumRow album={featured} onTogglePublish={togglePublish} />}
@@ -269,33 +214,6 @@ export default function AdminAlbums() {
         </DndContext>
       </div>
 
-      <div className="card">
-        <span className="label">Home page opening</span>
-        <Guide to="/" linkLabel="See the opening on the home page">
-          The opening is filled from the front of Featured, in drag order. In the wall modes,
-          photo 1 is the tall anchor, photo 2 is the upper frame of the pair, and photo 3 is
-          the small accent. One frame shows photo 1 alone. Straight in hangs no photos and
-          lists the collections beside the name instead. To change which photo lands where,
-          drag them inside Featured; the badges there mark the slots.
-        </Guide>
-        <div className="opening-grid">
-          {WALL_LAYOUTS.map((l) => (
-            <button
-              key={l.value}
-              type="button"
-              className={`opening-card${layout === l.value ? " current" : ""}`}
-              onClick={() => changeLayout(l.value)}
-            >
-              <MiniOpening value={l.value} thumbs={featuredThumbs} />
-              <span className="opening-caption">{l.label}</span>
-            </button>
-          ))}
-        </div>
-        <p className="hint">
-          Each card is a small preview drawn with the real Featured photos. Click one to use it; it applies immediately.
-          {layoutSaved && <span className="msg"> Saved. The site updates on next load.</span>}
-        </p>
-      </div>
     </main>
   );
 }
