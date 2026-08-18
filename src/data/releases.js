@@ -10,7 +10,7 @@ export const RELEASES = [
       "Buttons look like ours on iPhones instead of Apple's rounded defaults.",
       "The bottom tools start tucked away on phones; tap tools to open them. They clear the browser bar now.",
       "The footer stacks cleanly on narrow screens, and the opening previews in the studio keep their shape.",
-      "Also: add note now sits before tasks in the tools row.",
+      "Also: add note now sits before tasks in the tools row, the studio collection rows behave on phones, checkboxes wear the site green, and the name reads cate, lowercase, everywhere.",
     ],
   },
   {

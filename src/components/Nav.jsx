@@ -14,7 +14,7 @@ export default function Nav() {
 
   return (
     <nav className="nav">
-      <Link to="/" className="wordmark">Cate</Link>
+      <Link to="/" className="wordmark">cate</Link>
       <ul>
         <li><NavLink className="navlink" to="/work">work</NavLink></li>
         {!DEMO && session && (

@@ -2,6 +2,6 @@ import { useEffect } from "react";
 
 export function useTitle(t) {
   useEffect(() => {
-    document.title = t ? `${t} — Cate` : "Cate — Photographs";
+    document.title = t ? `${t} — cate` : "cate — photographs";
   }, [t]);
 }

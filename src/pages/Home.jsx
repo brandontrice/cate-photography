@@ -30,8 +30,8 @@ export default function Home() {
     <main>
       <section className={`opening opening-${layout}`}>
         <div className="opening-type">
-          <h1>Cate</h1>
-          <p className="opening-line">Photographs from quiet&nbsp;places.</p>
+          <h1>cate</h1>
+          <p className="opening-line">photographs from quiet&nbsp;places.</p>
           <span className="label">
             Blue Ridge &amp; beyond
             <SiteGuide to="/admin" linkLabel="Arrange it in the studio">

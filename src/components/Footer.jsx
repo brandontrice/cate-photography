@@ -20,7 +20,7 @@ export default function Footer() {
   }, []);
   return (
     <footer className="footer">
-      <span>© {new Date().getFullYear()} Cate</span>
+      <span>© {new Date().getFullYear()} cate</span>
       <span className="footer-social">
         {SOCIALS.map(({ label, Icon, handle, url }) => (
           <a key={label} href={url} target="_blank" rel="noreferrer" title={label}>

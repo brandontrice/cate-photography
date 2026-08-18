@@ -1660,3 +1660,19 @@ input[type="text"], input[type="email"], input[type="password"], textarea, selec
   .mini-one .mini-frame { height: 64px; }
   .opening-caption { font-size: 0.62rem; }
 }
+
+/* V12.1 — studio rows behave on phones; checkboxes wear the palette */
+input[type="checkbox"] { accent-color: var(--grass); }
+
+@media (max-width: 700px) {
+  .album-row { flex-wrap: wrap; row-gap: 0.6rem; }
+  .album-row .drag-handle, .album-row .drag-handle.pin { order: 1; }
+  .album-row-main { order: 2; flex: 1 1 calc(100% - 2.4rem); min-width: 0; }
+  .album-row-text { min-width: 0; }
+  .album-row-text .hint { white-space: normal; }
+  .album-row .preview-link { order: 3; margin-left: 2.4rem; }
+  .album-row .toggle { order: 4; margin-left: auto; }
+  .row { flex-wrap: wrap; row-gap: 0.5rem; }
+  .new-collection { flex-wrap: wrap; }
+  .new-collection button { flex: 1; }
+}
