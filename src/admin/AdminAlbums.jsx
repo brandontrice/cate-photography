@@ -12,6 +12,43 @@ function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+// Small living previews of each opening, drawn with Featured's real photos.
+function MiniOpening({ value, thumbs }) {
+  const t = (i) =>
+    thumbs[i] ? <img src={thumbs[i]} alt="" draggable={false} /> : <span className="mini-ph" />;
+  if (value === "straight-in")
+    return (
+      <span className="mini mini-straight">
+        <span className="mini-type"><i /><i /><i /></span>
+        <span className="mini-peek">{t(0)}</span>
+      </span>
+    );
+  if (value === "one-frame")
+    return (
+      <span className="mini mini-one">
+        <span className="mini-type"><i /><i /><i /></span>
+        <span className="mini-frame">{t(0)}</span>
+      </span>
+    );
+  if (value === "row")
+    return (
+      <span className="mini mini-row">
+        <span className="mini-frame">{t(0)}</span>
+        <span className="mini-frame drop1">{t(1)}</span>
+        <span className="mini-frame drop2">{t(2)}</span>
+      </span>
+    );
+  return (
+    <span className={`mini mini-anchor${value === "anchor-left" ? " flip" : ""}`}>
+      <span className="mini-col">
+        <span className="mini-frame">{t(1)}</span>
+        <span className="mini-frame short">{t(2)}</span>
+      </span>
+      <span className="mini-frame tall">{t(0)}</span>
+    </span>
+  );
+}
+
 function greeting() {
   const h = new Date().getHours();
   if (h < 5) return "Up late";
@@ -145,6 +182,14 @@ export default function AdminAlbums() {
     );
   }
 
+  const featuredAlbum = albums.find((x) => x.slug === "featured");
+  const featuredThumbs = featuredAlbum
+    ? [...featuredAlbum.photos]
+        .sort((x, y) => x.sort_order - y.sort_order)
+        .slice(0, 3)
+        .map((p) => publicUrl(p.path_sm))
+    : [];
+
   const photoCount = albums.reduce((n, a) => n + a.photos.length, 0);
   const publishedCount = albums.filter((a) => a.published).length;
 
@@ -223,18 +268,21 @@ export default function AdminAlbums() {
           hang the first three photos, One frame shows just the first, and Straight in skips
           frames entirely and moves right into the flow. Change it, reload the site, see it.
         </Guide>
-        <select
-          id="wall-layout"
-          className="layout-select"
-          value={layout}
-          onChange={(e) => changeLayout(e.target.value)}
-        >
+        <div className="opening-grid">
           {WALL_LAYOUTS.map((l) => (
-            <option key={l.value} value={l.value}>{l.label}</option>
+            <button
+              key={l.value}
+              type="button"
+              className={`opening-card${layout === l.value ? " current" : ""}`}
+              onClick={() => changeLayout(l.value)}
+            >
+              <MiniOpening value={l.value} thumbs={featuredThumbs} />
+              <span className="opening-caption">{l.label}</span>
+            </button>
           ))}
-        </select>
+        </div>
         <p className="hint">
-          How the home page opens: a three-frame wall, a single frame, or straight into the flow.
+          Each card is a small preview drawn with the real Featured photos. Click one to use it; it applies immediately.
           {layoutSaved && <span className="msg"> Saved. The site updates on next load.</span>}
         </p>
       </div>

@@ -1136,3 +1136,95 @@ a:focus-visible, button:focus-visible {
 .card.group-theirs .group-title { color: var(--bone); }
 .card.group-done { opacity: 0.75; }
 a.note-signout { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* ————————————————————————————————
+   V6.4 — opening picker with living previews
+   ———————————————————————————————— */
+.opening-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.9rem;
+  margin: 0.8rem 0 0.4rem;
+}
+.opening-card {
+  background: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--muted);
+  transition: border-color 0.2s ease;
+}
+.opening-card:hover { border-color: var(--muted); }
+.opening-card.current { border-color: var(--grass); }
+.opening-card.current .opening-caption { color: var(--grass); }
+.opening-caption {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  margin-top: 0.6rem;
+}
+
+/* The miniature stage: a consistent little canvas per card */
+.mini {
+  display: flex;
+  gap: 5px;
+  align-items: flex-start;
+  height: 84px;
+  overflow: hidden;
+}
+.mini img, .mini .mini-ph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface);
+}
+.mini .mini-frame { display: block; overflow: hidden; }
+
+/* Type stand-in: three quiet lines */
+.mini-type { display: block; flex: 1; padding-top: 10px; }
+.mini-type i {
+  display: block;
+  height: 3px;
+  background: var(--faint);
+  margin-bottom: 7px;
+}
+.mini-type i:nth-child(1) { width: 70%; height: 6px; background: var(--muted); }
+.mini-type i:nth-child(2) { width: 85%; }
+.mini-type i:nth-child(3) { width: 45%; }
+
+/* Anchor walls: tall frame one side, stacked pair the other */
+.mini-anchor .tall { flex: 1.3; height: 84px; }
+.mini-anchor .mini-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 14px;
+}
+.mini-anchor .mini-col .mini-frame { height: 34px; }
+.mini-anchor .mini-col .short { height: 24px; width: 70%; }
+.mini-anchor.flip { flex-direction: row-reverse; }
+
+/* Even row: three columns, gentle stagger */
+.mini-row .mini-frame { flex: 1; height: 56px; }
+.mini-row .drop1 { margin-top: 12px; }
+.mini-row .drop2 { margin-top: 24px; }
+
+/* One frame: type beside a single photo */
+.mini-one .mini-frame { flex: 1.2; height: 84px; }
+
+/* Straight in: type over a sliver of the first photo peeking up */
+.mini-straight { flex-direction: column; gap: 0; position: relative; }
+.mini-straight .mini-type { padding-top: 16px; width: 100%; }
+.mini-straight .mini-peek {
+  display: block;
+  width: 100%;
+  height: 18px;
+  overflow: hidden;
+  margin-top: auto;
+}
+.mini-straight .mini-peek img, .mini-straight .mini-peek .mini-ph { height: 60px; }
