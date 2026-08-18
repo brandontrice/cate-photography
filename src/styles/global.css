@@ -1090,4 +1090,29 @@ a:focus-visible, button:focus-visible {
   margin-bottom: 0.9rem;
 }
 .shop-button:disabled, button.shop-button:disabled { opacity: 0.45; cursor: default; }
-a.note-signout { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* ————————————————————————————————
+   V6.1 — derived waiting state
+   ———————————————————————————————— */
+.waiting-chip {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.14rem 0.45rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.waiting-chip.mine {
+  border-color: var(--grass);
+  color: var(--ink);
+  background: var(--grass);
+}
+
+/* Pins: sage when the ball is in your court, bone when in theirs */
+.note-pin.pin-mine { background: var(--grass); }
+.note-pin.pin-theirs { background: var(--bone); }

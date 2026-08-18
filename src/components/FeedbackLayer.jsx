@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { supabase, DEMO } from "../lib/supabase";
 import { GuideToggle } from "../admin/guide";
 import { displayName } from "../admin/names";
+import { waitingOn, waitingLabel } from "../lib/waiting";
 
 // When Cate is signed in, every public page grows a quiet "Leave a note"
 // button. Note mode: click anywhere, the note form opens right at that spot,
@@ -151,7 +152,7 @@ export default function FeedbackLayer() {
         {notes.map((n, i) => (
           <button
             key={n.id}
-            className="note-pin"
+            className={`note-pin${waitingOn(n, session.user.email).mine ? " pin-mine" : " pin-theirs"}`}
             style={{
               left: `${n.x_pct}%`,
               top: `${(n.y_pct / 100) * docHeight}px`,
@@ -175,7 +176,12 @@ export default function FeedbackLayer() {
             {i + 1}
             {openPin === n.id && (
               <span className={`note-popover${popPlace.below ? " pop-below" : ""} pop-${popPlace.align}`} onClick={(e) => e.stopPropagation()}>
-                <span className="note-author">{displayName(n.author)}</span>
+                <span className="note-author">
+                  {displayName(n.author)}
+                  <span className={`waiting-chip${waitingOn(n, session.user.email).mine ? " mine" : ""}`}>
+                    {waitingLabel(waitingOn(n, session.user.email), displayName)}
+                  </span>
+                </span>
                 <span className="note-text">{n.note}</span>
                 {n.note_replies.map((r) => (
                   <span className="note-reply" key={r.id}>
@@ -280,6 +286,9 @@ export default function FeedbackLayer() {
                 {i + 1}
               </button>
               <span className="note-task-text">
+                <span className={`waiting-chip${waitingOn(n, session.user.email).mine ? " mine" : ""}`}>
+                  {waitingLabel(waitingOn(n, session.user.email), displayName)}
+                </span>{" "}
                 {n.note}
                 {n.note_replies.map((r) => (
                   <span className="note-task-reply" key={r.id}>
@@ -298,11 +307,6 @@ export default function FeedbackLayer() {
 
       {/* The toggles — present only when signed in */}
       <div className="note-controls">
-        {pathname !== "/shop" && (
-          <a href="/shop" className="note-signout" title="The shop mockup, visible only to us">
-            Shop draft
-          </a>
-        )}
         <GuideToggle />
         <button
           className="note-signout"
@@ -313,7 +317,7 @@ export default function FeedbackLayer() {
         </button>
         {notes.length > 0 && (
           <button className={`note-signout${drawer ? " drawer-open" : ""}`} onClick={() => setDrawer(!drawer)}>
-            Tasks ({notes.length})
+            Tasks ({notes.filter((x) => waitingOn(x, session.user.email).mine).length}/{notes.length})
           </button>
         )}
         <button

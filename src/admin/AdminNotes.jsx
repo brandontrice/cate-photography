@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Guide, GuideToggle } from "./guide";
 import { displayName } from "./names";
+import { waitingOn, waitingLabel } from "../lib/waiting";
 
 export default function AdminNotes() {
   const [notes, setNotes] = useState([]);
@@ -37,6 +38,20 @@ export default function AdminNotes() {
   useEffect(() => {
     load();
   }, [showResolved]);
+
+  async function saveReply(note) {
+    if (!replyText.trim()) return;
+    await supabase.from("note_replies").insert({
+      note_id: note.id,
+      reply: replyText.trim(),
+      status: replyStatus || null,
+      author: session?.user?.email || null,
+    });
+    setReplyFor(null);
+    setReplyText("");
+    setReplyStatus("");
+    load();
+  }
 
   async function toggleResolved(n) {
     await supabase.from("site_notes").update({ resolved: !n.resolved }).eq("id", n.id);
@@ -74,14 +89,35 @@ export default function AdminNotes() {
           Show resolved
         </label>
       </div>
-      <div className="card">
-        {notes.length === 0 && (
-          <p className="msg">
-            Nothing here. Notes appear when someone signed in uses &ldquo;Leave a note&rdquo; on
-            the site.
-          </p>
-        )}
-        {notes.map((n) => (
+      {(() => {
+        const my = session?.user?.email || "";
+        const withState = notes.map((x) => ({ ...x, _w: waitingOn(x, my) }));
+        const groups = [
+          { title: "Waiting on you", items: withState.filter((x) => !x.resolved && x._w.mine) },
+          { title: "Waiting on them", items: withState.filter((x) => !x.resolved && !x._w.mine) },
+          { title: "Resolved", items: withState.filter((x) => x.resolved) },
+        ].filter((g) => g.items.length > 0);
+        return groups.length === 0 ? (
+          <div className="card">
+            <p className="msg">
+              Nothing here. Notes appear when someone signed in uses &ldquo;Leave a note&rdquo;
+              on the site.
+            </p>
+          </div>
+        ) : (
+          groups.map((g) => (
+            <div className="card" key={g.title}>
+              <span className="label">{g.title}</span>
+              {g.items.map((n) => renderNote(n))}
+            </div>
+          ))
+        );
+      })()}
+    </main>
+  );
+
+  function renderNote(n) {
+    return (
           <div className="row" key={n.id} style={{ alignItems: "flex-start" }}>
             <div style={{ flex: 1 }}>
               <div style={{ color: "var(--bone)" }}>
@@ -95,6 +131,11 @@ export default function AdminNotes() {
                 </div>
               ))}
               <div className="hint">
+                {!n.resolved && (
+                  <span className={`waiting-chip${n._w.mine ? " mine" : ""}`}>
+                    {waitingLabel(n._w, displayName)}
+                  </span>
+                )}{" "}
                 <a href={n.path} target="_blank" rel="noreferrer" className="preview-link">
                   {n.path} ↗
                 </a>{" "}
@@ -146,8 +187,6 @@ export default function AdminNotes() {
               Delete
             </button>
           </div>
-        ))}
-      </div>
-    </main>
-  );
+    );
+  }
 }
