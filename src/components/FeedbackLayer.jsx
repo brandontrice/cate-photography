@@ -10,7 +10,6 @@ import { waitingOn, waitingLabel } from "../lib/waiting";
 // and the saved note pins there — visible on the page and in the studio.
 export default function FeedbackLayer() {
   const { pathname } = useLocation();
-  const onAdmin = pathname.startsWith("/admin");
   const [session, setSession] = useState(null);
   const [notes, setNotes] = useState([]);
   const [mode, setMode] = useState(false);
@@ -21,7 +20,6 @@ export default function FeedbackLayer() {
   const [openPin, setOpenPin] = useState(null);
   const [popPlace, setPopPlace] = useState({ below: false, align: "center" });
   const [replyText, setReplyText] = useState("");
-  const [drawer, setDrawer] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(() => {
     try { return localStorage.getItem("tools-open") !== "closed"; } catch { return true; }
   });
@@ -30,6 +28,7 @@ export default function FeedbackLayer() {
     try { localStorage.setItem("tools-open", open ? "open" : "closed"); } catch { /* fine */ }
   }
   const [docHeight, setDocHeight] = useState(0);
+  const [taskCount, setTaskCount] = useState(0);
 
   useEffect(() => {
     if (DEMO) return;
@@ -40,12 +39,16 @@ export default function FeedbackLayer() {
 
   const load = useCallback(async () => {
     if (DEMO) return;
-    const { data } = await supabase
+    const { data: allOpen } = await supabase
       .from("site_notes")
       .select("*, note_replies(*)")
-      .eq("path", pathname)
-      .eq("resolved", false)
-      .order("created_at");
+      .eq("resolved", false);
+    const { data: sess } = await supabase.auth.getSession();
+    const my = sess.session?.user?.email || "";
+    setTaskCount((allOpen || []).filter((x) => waitingOn(x, my).mine).length);
+    const data = (allOpen || [])
+      .filter((x) => x.path === pathname)
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     setNotes(
       (data || []).map((n) => ({
         ...n,
@@ -66,22 +69,20 @@ export default function FeedbackLayer() {
     if (session) load();
     exitMode();
     setOpenPin(null);
-    setDrawer(false);
   }, [session, pathname, load, exitMode]);
 
   // Escape always leaves note mode, wherever focus is.
   useEffect(() => {
-    if (!mode && !draft && openPin === null && !drawer) return;
+    if (!mode && !draft && openPin === null) return;
     function onKey(e) {
       if (e.key === "Escape") {
         exitMode();
         setOpenPin(null);
-        setDrawer(false);
       }
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [mode, draft, openPin, drawer, exitMode]);
+  }, [mode, draft, openPin, exitMode]);
 
   // Track full document height so pins can sit anywhere down the page.
   useEffect(() => {
@@ -266,75 +267,27 @@ export default function FeedbackLayer() {
         </div>
       )}
 
-      {/* Task drawer: open notes on this page, jump + resolve */}
-      {drawer && (
-        <aside className="note-drawer">
-          <div className="note-drawer-head">
-            <span className="label">Open notes — this page</span>
-            <button className="lightbox-close" style={{ position: "static" }} onClick={() => setDrawer(false)}>×</button>
-          </div>
-          {notes.length === 0 && <p className="hint">All clear here.</p>}
-          {notes.map((n, i) => (
-            <div className="note-task" key={n.id}>
-              <button
-                className="note-task-jump"
-                title="Scroll to this note"
-                onClick={() =>
-                  window.scrollTo({
-                    top: (n.y_pct / 100) * document.documentElement.scrollHeight - 140,
-                    behavior: "smooth",
-                  })
-                }
-              >
-                {i + 1}
-              </button>
-              <span className="note-task-text">
-                <span className={`waiting-chip${waitingOn(n, session.user.email).mine ? " mine" : ""}`}>
-                  {waitingLabel(waitingOn(n, session.user.email), session.user.email)}
-                </span>{" "}
-                {n.note}
-                {n.note_replies.map((r) => (
-                  <span className="note-task-reply" key={r.id}>
-                    {displayName(r.author)}: {r.reply}
-                  </span>
-                ))}
-              </span>
-              <button className="note-task-done" title="Mark resolved" onClick={() => resolveNote(n.id)}>
-                Done
-              </button>
-            </div>
-          ))}
-        </aside>
-      )}
-
-      {/* Dev tools cluster: guide, notes, tasks, add note, sign out. Hideable. */}
+      {/* Dev tools cluster: identical on the site and in the studio. */}
       <div className="note-controls">
         {toolsOpen ? (
           <>
             <GuideToggle />
-            <a href="/admin/notes" className="note-signout" title="The notes list in the studio">
-              notes
+            <a href="/admin/tasks" className="note-signout" title="Open notes are your tasks">
+              tasks ({taskCount})
             </a>
-            {notes.length > 0 && (
-              <button className={`note-signout${drawer ? " drawer-open" : ""}`} onClick={() => setDrawer(!drawer)}>
-                tasks ({notes.filter((x) => waitingOn(x, session.user.email).mine).length}/{notes.length})
-              </button>
-            )}
             <button
               className={`note-toggle${mode ? " active" : ""}`}
               onClick={() => (mode || draft ? exitMode() : setMode(true))}
             >
               {mode || draft ? "cancel" : "add note"}
             </button>
-            {!onAdmin && (
-              <button
-                className="note-signout"
-                title="Sign out and see the site as visitors do"
-                onClick={() => supabase.auth.signOut()}
-              >
-                sign out
-              </button>
-            )}
+            <button
+              className="note-signout"
+              title="Sign out and see the site as visitors do"
+              onClick={() => supabase.auth.signOut()}
+            >
+              sign out
+            </button>
             <button className="tools-hide" title="Hide these tools" onClick={() => setTools(false)}>
               ×
             </button>

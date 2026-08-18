@@ -68,14 +68,14 @@ export default function AdminNotes() {
   return (
     <main className="admin">
       <Link to="/admin" className="label">← studio</Link>
-      <h1>Notes</h1>
+      <h1>Tasks</h1>
       <Guide to="/" linkLabel="Go add one on the site">
-        Add note pins a thought to any spot on any page, including the studio pages, and it
-        lands here. Notes sort by whose court the ball is in: an unanswered note waits on the
-        other person, and each reply flips it. A note holds at most two replies; after that,
-        start a fresh one. Reply answers and keeps it open. Reply &amp; resolve answers and
-        closes it in one go. Resolve closes without a reply, Reopen brings one back, Delete
-        removes it for good.
+        You add a note; open notes are your tasks. Add note pins a thought to any spot on any
+        page, including the studio, and it lands here sorted by whose court the ball is in.
+        An unanswered note waits on the other person, and each reply flips it. A note holds
+        at most two replies; after that, start a fresh one. Reply answers and keeps it open,
+        Reply &amp; resolve answers and closes it in one go, Resolve closes without a reply,
+        Reopen brings one back, Delete removes it for good.
       </Guide>
       <div className="card">
         <label className="toggle">
@@ -98,8 +98,7 @@ export default function AdminNotes() {
         return groups.length === 0 ? (
           <div className="card">
             <p className="msg">
-              Nothing here. Notes appear when someone signed in uses &ldquo;Leave a note&rdquo;
-              on the site.
+  All clear. Add note on any page and it becomes a task here.
             </p>
           </div>
         ) : (

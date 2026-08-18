@@ -1505,3 +1505,58 @@ a.area-tab:hover { color: var(--bone); }
 
 .activity-row { align-items: baseline; font-size: 0.85rem; color: var(--muted); }
 .activity-when { white-space: nowrap; margin-left: 1rem; }
+
+/* ————————————————————————————————
+   V10 — guide markers, unified tools
+   ———————————————————————————————— */
+.guide-spot {
+  position: relative;
+  display: inline-block;
+  width: 1.15rem;
+  height: 1.15rem;
+  vertical-align: middle;
+  margin-left: 0.45rem;
+}
+.guide-dot {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  border: 1px solid var(--grass);
+  background: rgba(169, 144, 108, 0.16);
+  color: var(--grass);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0;
+  cursor: help;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.guide-spot.on .guide-dot { opacity: 1; pointer-events: auto; }
+.guide-pop {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 65;
+  width: min(78vw, 340px);
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid rgba(169, 144, 108, 0.45);
+  border-left: 3px solid var(--grass);
+  padding: 0.8rem 0.95rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--bone);
+  text-transform: none;
+  letter-spacing: normal;
+  text-align: left;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+.guide-pop.pop-above { top: auto; bottom: calc(100% + 0.5rem); }
+.guide-pop .guide-chip { margin-top: 0.15rem; }
+.guide-pop .guide-link { display: inline-block; margin-left: 0.5rem; }

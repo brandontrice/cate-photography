@@ -3,6 +3,15 @@
 // carries the current version.
 export const RELEASES = [
   {
+    version: "v10",
+    date: "August 18, 2026",
+    notes: [
+      "One tools cluster everywhere: guide, tasks, add note, sign out. Same on the site and in the studio.",
+      "Notes and tasks are one thing now: you add a note, and open notes are your tasks. The list lives under tasks; the old address still works.",
+      "The guide no longer moves the page. Small dots mark each explained spot; hover or tap one to read.",
+    ],
+  },
+  {
     version: "v9",
     date: "August 18, 2026",
     notes: [

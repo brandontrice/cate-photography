@@ -53,7 +53,7 @@ export default function Shop() {
         parts you have opinions about.
       </div>
       <span className="label">Shop, two ways</span>
-      <SiteGuide to="/admin/notes" linkLabel="See the notes list">
+      <SiteGuide to="/admin/tasks" linkLabel="See the tasks list">
         This page is a decision aid, not a store. Two directions mocked up in the site&rsquo;s
         real design: prints by email inquiry, and instant digital downloads. Add note on
         anything here; those pins become the requirements for whichever version gets built.

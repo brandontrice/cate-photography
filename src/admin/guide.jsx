@@ -41,23 +41,49 @@ export function GuideToggle() {
   );
 }
 
-// A guide annotation. Optional link points to the counterpart location,
-// so studio notes can jump to the site and site notes back to the studio.
+// A guide annotation: a small dot that never moves the layout. The dot is
+// always rendered (invisible when the guide is off) so toggling shifts
+// nothing; hover or tap opens the note as a floating popover.
 export function Guide({ children, to, linkLabel }) {
   const [on] = useGuide();
-  if (!on) return null;
+  const [open, setOpen] = useState(false);
+  const [place, setPlace] = useState("below");
+
+  function openAt(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPlace(window.innerHeight - rect.bottom < 260 ? "above" : "below");
+    setOpen(true);
+  }
+
   return (
-    <p className="guide-note">
-      <span className="guide-chip">Guide</span>
-      <span className="guide-body">
-        {children}
-        {to && (
-          <Link to={to} className="guide-link">
-            {linkLabel || "See its place"} ↗
-          </Link>
-        )}
-      </span>
-    </p>
+    <span className={`guide-spot${on ? " on" : ""}`}>
+      <button
+        type="button"
+        className="guide-dot"
+        aria-label="Guide"
+        tabIndex={on ? 0 : -1}
+        onMouseEnter={openAt}
+        onMouseLeave={() => setOpen(false)}
+        onClick={(e) => (open ? setOpen(false) : openAt(e))}
+        onFocus={openAt}
+        onBlur={() => setOpen(false)}
+      >
+        i
+      </button>
+      {on && open && (
+        <span className={`guide-pop pop-${place}`}>
+          <span className="guide-chip">guide</span>
+          <span className="guide-body">
+            {children}
+            {to && (
+              <Link to={to} className="guide-link">
+                {linkLabel || "see its place"} ↗
+              </Link>
+            )}
+          </span>
+        </span>
+      )}
+    </span>
   );
 }
 

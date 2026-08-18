@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { supabase, DEMO } from "../lib/supabase";
 import AdminAlbums from "./AdminAlbums";
 import AdminAlbum from "./AdminAlbum";
@@ -94,7 +94,8 @@ export default function Admin() {
   return (
     <Routes>
       <Route index element={<AdminAlbums />} />
-      <Route path="notes" element={<AdminNotes />} />
+      <Route path="tasks" element={<AdminNotes />} />
+      <Route path="notes" element={<Navigate to="/admin/tasks" replace />} />
       <Route path="reset" element={<ResetPassword />} />
       <Route path="posts" element={<AdminPosts />} />
       <Route path="posts/:postId" element={<AdminPost />} />
