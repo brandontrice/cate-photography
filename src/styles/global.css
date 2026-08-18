@@ -1587,3 +1587,76 @@ a.area-tab:hover { color: var(--bone); }
   place-items: center;
 }
 .label .guide-spot { margin-left: 0.5rem; }
+
+/* ————————————————————————————————
+   V12 — the phone pass
+   ———————————————————————————————— */
+/* Nothing may ever cause sideways scroll again */
+html, body { overflow-x: clip; }
+
+/* Our buttons, not the platform's */
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+@media (max-width: 700px) {
+  /* Menu: tighter, allowed to wrap, never wider than the screen */
+  .nav {
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+    padding: 1rem 1.1rem;
+  }
+  .nav .wordmark { font-size: 1.1rem; }
+  .nav ul {
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .nav a.navlink {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+  .nav-divider { height: 0.7rem; }
+
+  /* Tools: compact, right-aligned, clear of the browser bar */
+  .note-controls {
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    max-width: calc(100vw - 1.5rem);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+  .note-controls button, .note-controls a {
+    font-size: 0.68rem;
+    padding: 0.5rem 0.7rem;
+  }
+  .note-draft {
+    right: 0.75rem;
+    bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Footer: a clean stack */
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  .footer-social { flex-wrap: wrap; gap: 1rem; }
+  .footer-right { flex-wrap: wrap; gap: 1rem; }
+
+  /* Studio opening previews keep their proportions on a narrow screen */
+  .opening-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .mini { height: 64px; }
+  .mini-anchor .tall { height: 64px; }
+  .mini-one .mini-frame { height: 64px; }
+  .opening-caption { font-size: 0.62rem; }
+}

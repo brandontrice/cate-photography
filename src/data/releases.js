@@ -3,6 +3,17 @@
 // carries the current version.
 export const RELEASES = [
   {
+    version: "v12",
+    date: "August 18, 2026",
+    notes: [
+      "The phone pass. The menu fits small screens and nothing scrolls sideways anymore.",
+      "Buttons look like ours on iPhones instead of Apple's rounded defaults.",
+      "The bottom tools start tucked away on phones; tap tools to open them. They clear the browser bar now.",
+      "The footer stacks cleanly on narrow screens, and the opening previews in the studio keep their shape.",
+      "Also: add note now sits before tasks in the tools row.",
+    ],
+  },
+  {
     version: "v11",
     date: "August 18, 2026",
     notes: [

@@ -21,7 +21,13 @@ export default function FeedbackLayer() {
   const [popPlace, setPopPlace] = useState({ below: false, align: "center" });
   const [replyText, setReplyText] = useState("");
   const [toolsOpen, setToolsOpen] = useState(() => {
-    try { return localStorage.getItem("tools-open") !== "closed"; } catch { return true; }
+    try {
+      const stored = localStorage.getItem("tools-open");
+      if (stored === "open") return true;
+      if (stored === "closed") return false;
+    } catch { /* fall through to the size default */ }
+    // No saved preference: open on desktop, tucked away on phones.
+    return window.innerWidth >= 700;
   });
   function setTools(open) {
     setToolsOpen(open);
