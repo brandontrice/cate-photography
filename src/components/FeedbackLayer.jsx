@@ -272,15 +272,15 @@ export default function FeedbackLayer() {
         {toolsOpen ? (
           <>
             <GuideToggle />
-            <a href="/admin/tasks" className="note-signout" title="Open notes are your tasks">
-              tasks ({taskCount})
-            </a>
             <button
               className={`note-toggle${mode ? " active" : ""}`}
               onClick={() => (mode || draft ? exitMode() : setMode(true))}
             >
               {mode || draft ? "cancel" : "add note"}
             </button>
+            <a href="/admin/tasks" className="note-signout" title="Open notes are your tasks">
+              tasks ({taskCount})
+            </a>
             <button
               className="note-signout"
               title="Sign out and see the site as visitors do"
