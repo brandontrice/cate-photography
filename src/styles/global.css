@@ -877,3 +877,7 @@ a:focus-visible, button:focus-visible {
   color: var(--bone);
 }
 .album-row-main:hover .album-row-title { color: var(--grass); }
+
+/* Featured pinned row */
+.album-row.pinned { background: rgba(169, 144, 108, 0.05); }
+.drag-handle.pin { cursor: default; color: var(--grass); }

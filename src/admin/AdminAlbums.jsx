@@ -24,19 +24,12 @@ function greeting() {
   return "Good evening";
 }
 
-function SortableAlbumRow({ album, onTogglePublish }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: album.id });
+function AlbumRowBody({ album, onTogglePublish }) {
   const cover =
     album.photos.find((p) => p.id === album.cover_photo_id) ||
     [...album.photos].sort((a, b) => a.sort_order - b.sort_order)[0];
   return (
-    <div
-      ref={setNodeRef}
-      className="album-row"
-      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 }}
-    >
-      <span className="drag-handle" title="Drag to reorder" {...attributes} {...listeners}>⠿</span>
+    <>
       <Link to={`/admin/${album.id}`} className="album-row-main">
         <span className="album-thumb">
           {cover ? <img src={publicUrl(cover.path_sm)} alt="" /> : <span className="album-thumb-empty" />}
@@ -62,6 +55,31 @@ function SortableAlbumRow({ album, onTogglePublish }) {
         <input type="checkbox" checked={album.published} onChange={() => onTogglePublish(album)} />
         {album.published ? "Published" : "Hidden"}
       </label>
+    </>
+  );
+}
+
+// Featured: pinned in place — it drives the home page, not the /work order.
+function PinnedAlbumRow({ album, onTogglePublish }) {
+  return (
+    <div className="album-row pinned">
+      <span className="drag-handle pin" title="Featured stays put — it is the home page">⌂</span>
+      <AlbumRowBody album={album} onTogglePublish={onTogglePublish} />
+    </div>
+  );
+}
+
+function SortableAlbumRow({ album, onTogglePublish }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: album.id });
+  return (
+    <div
+      ref={setNodeRef}
+      className="album-row"
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 }}
+    >
+      <span className="drag-handle" title="Drag to reorder" {...attributes} {...listeners}>⠿</span>
+      <AlbumRowBody album={album} onTogglePublish={onTogglePublish} />
     </div>
   );
 }
@@ -117,14 +135,17 @@ export default function AdminAlbums() {
     load();
   }
 
+  const featured = albums.find((a) => a.slug === "featured");
+  const sortable = albums.filter((a) => a.slug !== "featured");
+
   async function onDragEnd({ active, over }) {
     if (!over || active.id === over.id) return;
-    const oldIndex = albums.findIndex((a) => a.id === active.id);
-    const newIndex = albums.findIndex((a) => a.id === over.id);
-    const next = arrayMove(albums, oldIndex, newIndex);
-    setAlbums(next);
+    const oldIndex = sortable.findIndex((a) => a.id === active.id);
+    const newIndex = sortable.findIndex((a) => a.id === over.id);
+    const next = arrayMove(sortable, oldIndex, newIndex);
+    setAlbums(featured ? [featured, ...next] : next);
     await Promise.all(
-      next.map((a, i) => supabase.from("albums").update({ sort_order: i }).eq("id", a.id))
+      next.map((a, i) => supabase.from("albums").update({ sort_order: i + 1 }).eq("id", a.id))
     );
   }
 
@@ -174,9 +195,10 @@ export default function AdminAlbums() {
           three photos on the home page wall.
         </p>
         {albums.length === 0 && <p className="msg">No collections yet — create the first one above.</p>}
+        {featured && <PinnedAlbumRow album={featured} onTogglePublish={togglePublish} />}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-          <SortableContext items={albums.map((a) => a.id)} strategy={verticalListSortingStrategy}>
-            {albums.map((a) => (
+          <SortableContext items={sortable.map((a) => a.id)} strategy={verticalListSortingStrategy}>
+            {sortable.map((a) => (
               <SortableAlbumRow key={a.id} album={a} onTogglePublish={togglePublish} />
             ))}
           </SortableContext>
