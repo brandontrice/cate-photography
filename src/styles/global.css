@@ -1536,9 +1536,7 @@ a.area-tab:hover { color: var(--bone); }
 }
 .guide-spot.on .guide-dot { opacity: 1; pointer-events: auto; }
 .guide-pop {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.5rem);
+  position: fixed;
   z-index: 65;
   width: min(78vw, 340px);
   display: flex;
@@ -1556,8 +1554,9 @@ a.area-tab:hover { color: var(--bone); }
   letter-spacing: normal;
   text-align: left;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
 }
-.guide-pop.pop-above { top: auto; bottom: calc(100% + 0.5rem); }
 .guide-pop .guide-chip { margin-top: 0.15rem; }
 .guide-pop .guide-link { display: inline-block; margin-left: 0.5rem; }
 

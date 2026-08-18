@@ -47,11 +47,21 @@ export function GuideToggle() {
 export function Guide({ children, to, linkLabel }) {
   const [on] = useGuide();
   const [open, setOpen] = useState(false);
-  const [place, setPlace] = useState("below");
+  const [popStyle, setPopStyle] = useState(null);
 
   function openAt(e) {
+    // Fixed positioning, clamped so the panel always fits the viewport,
+    // whatever screen the dot lives on.
     const rect = e.currentTarget.getBoundingClientRect();
-    setPlace(window.innerHeight - rect.bottom < 260 ? "above" : "below");
+    const width = Math.min(window.innerWidth - 16, 340);
+    const left = Math.min(Math.max(rect.left - 6, 8), window.innerWidth - width - 8);
+    const style = { width, left };
+    if (window.innerHeight - rect.bottom >= 240 || rect.top < 240) {
+      style.top = rect.bottom + 8;
+    } else {
+      style.bottom = window.innerHeight - rect.top + 8;
+    }
+    setPopStyle(style);
     setOpen(true);
   }
 
@@ -70,8 +80,8 @@ export function Guide({ children, to, linkLabel }) {
       >
         i
       </button>
-      {on && open && (
-        <span className={`guide-pop pop-${place}`}>
+      {on && open && popStyle && (
+        <span className="guide-pop" style={popStyle}>
           <span className="guide-chip">guide</span>
           <span className="guide-body">
             {children}
