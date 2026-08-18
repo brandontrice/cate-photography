@@ -16,7 +16,7 @@ export default function Footer() {
           </a>
         ))}
       </span>
-      <span>Roanoke, Virginia</span>
+      <span className="footer-right">Roanoke, Virginia<a href="/admin" className="studio-link">Studio</a></span>
     </footer>
   );
 }

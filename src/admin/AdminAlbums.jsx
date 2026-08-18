@@ -4,6 +4,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
+import { WALL_LAYOUTS, getWallLayout, setWallLayout } from "../lib/data";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -44,6 +45,8 @@ export default function AdminAlbums() {
   const [albums, setAlbums] = useState([]);
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
+  const [layout, setLayout] = useState("anchor-right");
+  const [layoutSaved, setLayoutSaved] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   async function load() {
@@ -56,7 +59,15 @@ export default function AdminAlbums() {
 
   useEffect(() => {
     load();
+    getWallLayout().then(setLayout).catch(() => {});
   }, []);
+
+  async function changeLayout(value) {
+    setLayout(value);
+    await setWallLayout(value);
+    setLayoutSaved(true);
+    setTimeout(() => setLayoutSaved(false), 2000);
+  }
 
   async function createAlbum() {
     if (!title.trim()) return;
@@ -92,7 +103,10 @@ export default function AdminAlbums() {
     <main className="admin">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <h1>Collections</h1>
-        <button className="ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
+        <span style={{ display: "flex", gap: "0.75rem" }}>
+          <Link to="/admin/notes"><button className="ghost">Notes</button></Link>
+          <button className="ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
+        </span>
       </div>
 
       <div className="card">
@@ -109,6 +123,25 @@ export default function AdminAlbums() {
         <p className="hint">
           The collection with the slug &ldquo;featured&rdquo; is the home page. Drag rows to set
           the order collections appear on the site.
+        </p>
+      </div>
+
+      <div className="card">
+        <label className="hint" htmlFor="wall-layout">Home page wall</label>
+        <select
+          id="wall-layout"
+          className="layout-select"
+          value={layout}
+          onChange={(e) => changeLayout(e.target.value)}
+        >
+          {WALL_LAYOUTS.map((l) => (
+            <option key={l.value} value={l.value}>{l.label}</option>
+          ))}
+        </select>
+        <p className="hint">
+          The first three photos in the Featured collection hang on the home page wall, in
+          their drag order — frame 1 is the anchor. This picks how the three are arranged.
+          {layoutSaved && <span className="msg"> Saved — the site updates on next load.</span>}
         </p>
       </div>
 

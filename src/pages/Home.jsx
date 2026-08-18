@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
-import { getFeatured, getAlbums } from "../lib/data";
+import { getFeatured, getAlbums, getWallLayout } from "../lib/data";
 import { useTitle } from "../lib/title";
 
 export default function Home() {
   const [photos, setPhotos] = useState([]);
   const [albums, setAlbums] = useState([]);
   const [lb, setLb] = useState(null);
+  const [layout, setLayout] = useState("anchor-right");
   useTitle(null);
 
   useEffect(() => {
     getFeatured().then(setPhotos).catch(console.error);
+    getWallLayout().then(setLayout).catch(console.error);
     getAlbums()
       .then((all) => setAlbums(all.filter((a) => a.slug !== "featured")))
       .catch(console.error);
@@ -31,7 +33,7 @@ export default function Home() {
           <p className="opening-line">Photographs from quiet&nbsp;places.</p>
           <span className="label">Blue Ridge &amp; beyond</span>
         </div>
-        <div className="wall">
+        <div className={`wall layout-${layout}`}>
           {wall.map((p, i) => (
             <figure
               className={`wall-piece wall-${i + 1}`}

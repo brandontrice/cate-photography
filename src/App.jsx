@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
+import FeedbackLayer from "./components/FeedbackLayer";
 import Home from "./pages/Home";
 import Work from "./pages/Work";
 import Album from "./pages/Album";
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/admin/*" element={<Admin />} />
       </Routes>
       {!isAdmin && <Footer />}
+      {!isAdmin && <FeedbackLayer />}
     </>
   );
 }

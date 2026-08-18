@@ -75,3 +75,25 @@ export async function getFeatured() {
   const albums = await getAlbums();
   return albums[0] ? albums[0].photos : [];
 }
+
+// ——— site settings ———
+
+export const WALL_LAYOUTS = [
+  { value: "anchor-right", label: "Anchor right — tall frame right, pair left" },
+  { value: "anchor-left", label: "Anchor left — tall frame left, pair right" },
+  { value: "row", label: "Even row — three frames, gently staggered" },
+];
+
+export async function getWallLayout() {
+  if (DEMO) return "anchor-right";
+  const { data } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "wall_layout")
+    .maybeSingle();
+  return data?.value || "anchor-right";
+}
+
+export async function setWallLayout(value) {
+  await supabase.from("site_settings").upsert({ key: "wall_layout", value });
+}

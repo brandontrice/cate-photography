@@ -3,6 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { supabase, DEMO } from "../lib/supabase";
 import AdminAlbums from "./AdminAlbums";
 import AdminAlbum from "./AdminAlbum";
+import AdminNotes from "./AdminNotes";
 
 export default function Admin() {
   const [session, setSession] = useState(null);
@@ -69,6 +70,7 @@ export default function Admin() {
   return (
     <Routes>
       <Route index element={<AdminAlbums />} />
+      <Route path="notes" element={<AdminNotes />} />
       <Route path=":albumId" element={<AdminAlbum />} />
     </Routes>
   );

@@ -9,7 +9,7 @@ import { prepareUpload } from "../lib/images";
 
 const BUCKET = "photos";
 
-function SortableThumb({ photo, isCover, onOpen }) {
+function SortableThumb({ photo, isCover, wallSlot, onOpen }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: photo.id });
   return (
@@ -27,6 +27,7 @@ function SortableThumb({ photo, isCover, onOpen }) {
     >
       <img src={publicUrl(photo.path_sm)} alt={photo.caption || ""} draggable={false} />
       {isCover && <span className="cover-badge">Cover</span>}
+      {wallSlot && <span className="wall-badge">Wall {wallSlot}</span>}
     </div>
   );
 }
@@ -182,11 +183,12 @@ export default function AdminAlbum() {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={photos.map((p) => p.id)} strategy={rectSortingStrategy}>
           <div className="grid">
-            {photos.map((p) => (
+            {photos.map((p, i) => (
               <SortableThumb
                 key={p.id}
                 photo={p}
                 isCover={album.cover_photo_id === p.id}
+                wallSlot={album.slug === "featured" && i < 3 ? i + 1 : null}
                 onOpen={openEditor}
               />
             ))}
