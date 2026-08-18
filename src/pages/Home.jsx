@@ -34,6 +34,18 @@ export default function Home() {
           <p className="opening-line">Photographs from quiet&nbsp;places.</p>
           <span className="label">Blue Ridge &amp; beyond</span>
         </div>
+        {layout === "straight-in" && albums.length > 0 && (
+          <nav className="opening-index" aria-label="Collections">
+            {albums.map((a) => (
+              <Link to={`/work/${a.slug}`} className="opening-index-item" key={a.id}>
+                <span className="opening-index-title">{a.title}</span>
+                <span className="label">
+                  {a.photos.length} photograph{a.photos.length === 1 ? "" : "s"}
+                </span>
+              </Link>
+            ))}
+          </nav>
+        )}
         <div className="wall-guide-slot">
           <SiteGuide to="/admin" linkLabel="Arrange it in the studio">
             The opening uses the front of the Featured collection: three photos as a wall,

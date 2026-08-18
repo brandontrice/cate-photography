@@ -302,11 +302,6 @@ export default function FeedbackLayer() {
 
       {/* The toggles — present only when signed in */}
       <div className="note-controls">
-        {!onAdmin && pathname !== "/shop" && (
-          <a href="/shop" className="note-signout" title="The shop mockup, visible only to us">
-            Shop draft
-          </a>
-        )}
         {!onAdmin && <GuideToggle />}
         {!onAdmin && (
           <button

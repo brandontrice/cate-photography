@@ -10,6 +10,8 @@ import Album from "./pages/Album";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Shop from "./pages/Shop";
+import Journal from "./pages/Journal";
+import Post from "./pages/Post";
 import Admin from "./admin/Admin";
 
 function ScrollToTop() {
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/journal" element={<Journal />} />
+        <Route path="/journal/:slug" element={<Post />} />
         <Route path="/admin/*" element={<Admin />} />
       </Routes>
       {!isAdmin && <Footer />}

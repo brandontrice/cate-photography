@@ -209,6 +209,7 @@ export default function AdminAlbums() {
         <nav className="studio-nav">
           <Link to="/" className="studio-nav-link">← View site</Link>
           <GuideToggle />
+          <Link to="/admin/posts"><button className="ghost">Field Notes</button></Link>
           <Link to="/admin/notes"><button className="ghost">Notes</button></Link>
           <Link to="/admin/reset"><button className="ghost">Password</button></Link>
           <button className="ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>

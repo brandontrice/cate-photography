@@ -9,15 +9,14 @@ export default function Contact() {
       <div className="prose" style={{ marginTop: "3rem" }}>
         <p>For prints, commissions, or a walk in the fog.</p>
         <div className="contact-links">
-          {/* Swap in her real email when she has one she wants public. */}
-          <a href="mailto:hello@example.com">
+          <a href="mailto:catelay98@gmail.com">
             <span>Email</span>
-            <span className="label">hello@example.com</span>
+            <span className="label">catelay98@gmail.com</span>
           </a>
-          {SOCIALS.map((s) => (
-            <a key={s.label} href={s.url} target="_blank" rel="noreferrer">
-              <span>{s.label}</span>
-              <span className="label">{s.handle}</span>
+          {SOCIALS.map(({ label, Icon, handle, url }) => (
+            <a key={label} href={url} target="_blank" rel="noreferrer">
+              <span><Icon /> {label}</span>
+              <span className="label">{handle}</span>
             </a>
           ))}
         </div>

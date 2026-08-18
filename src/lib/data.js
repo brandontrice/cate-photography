@@ -121,3 +121,56 @@ export async function getWallLayout() {
 export async function setWallLayout(value) {
   await supabase.from("site_settings").upsert({ key: "wall_layout", value });
 }
+
+// ——— Field Notes ———
+
+const POST_SELECT =
+  "id, title, slug, body, published, published_at, created_at, cover:photos(path_sm, path_md, path_lg, width, height, caption)";
+
+function shapePost(p) {
+  return {
+    ...p,
+    cover: p.cover
+      ? {
+          src_sm: publicUrl(p.cover.path_sm),
+          src_md: publicUrl(p.cover.path_md),
+          src_lg: publicUrl(p.cover.path_lg),
+          width: p.cover.width,
+          height: p.cover.height,
+          caption: p.cover.caption || "",
+        }
+      : null,
+  };
+}
+
+export async function getPosts() {
+  if (DEMO) return [];
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_SELECT)
+    .eq("published", true)
+    .order("published_at", { ascending: false, nullsFirst: false });
+  if (error) throw error;
+  return data.map(shapePost);
+}
+
+export async function getPost(slug) {
+  if (DEMO) return null;
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_SELECT)
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? shapePost(data) : null;
+}
+
+// A line that is nothing but an Instagram or TikTok link becomes an embed.
+export function embedFor(line) {
+  const t = line.trim();
+  let m = t.match(/^https?:\/\/(?:www\.)?instagram\.com\/(p|reel)\/([A-Za-z0-9_-]+)/);
+  if (m) return { kind: "instagram", src: `https://www.instagram.com/${m[1]}/${m[2]}/embed/` };
+  m = t.match(/^https?:\/\/(?:www\.)?tiktok\.com\/@[^/]+\/video\/(\d+)/);
+  if (m) return { kind: "tiktok", src: `https://www.tiktok.com/embed/v2/${m[1]}` };
+  return null;
+}

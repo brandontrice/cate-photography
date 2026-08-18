@@ -11,7 +11,7 @@ export default function About() {
           lifts, fields after the light leaves, the coast when the crowds go home.
         </p>
         <p>
-          Based in Roanoke, Virginia, at the foot of the Blue Ridge. Available for
+          Based in Southwest Virginia, at the foot of the Blue Ridge. Available for
           prints and select commissions.
         </p>
         {/* Swap this copy for her real voice — write it together. */}

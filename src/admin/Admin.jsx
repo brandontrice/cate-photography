@@ -5,6 +5,8 @@ import AdminAlbums from "./AdminAlbums";
 import AdminAlbum from "./AdminAlbum";
 import AdminNotes from "./AdminNotes";
 import ResetPassword from "./ResetPassword";
+import AdminPosts from "./AdminPosts";
+import AdminPost from "./AdminPost";
 
 export default function Admin() {
   const [session, setSession] = useState(null);
@@ -93,6 +95,8 @@ export default function Admin() {
       <Route index element={<AdminAlbums />} />
       <Route path="notes" element={<AdminNotes />} />
       <Route path="reset" element={<ResetPassword />} />
+      <Route path="posts" element={<AdminPosts />} />
+      <Route path="posts/:postId" element={<AdminPost />} />
       <Route path=":albumId" element={<AdminAlbum />} />
     </Routes>
   );

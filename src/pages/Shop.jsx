@@ -18,6 +18,7 @@ export default function Shop() {
   const [session, setSession] = useState(null);
   const [checked, setChecked] = useState(false);
   const [photos, setPhotos] = useState([]);
+  const [tab, setTab] = useState("prints");
   useTitle("Shop (draft)");
 
   useEffect(() => {
@@ -58,8 +59,23 @@ export default function Shop() {
         anything here; those pins become the requirements for whichever version gets built.
       </SiteGuide>
 
+      <div className="shop-tabs">
+        <button
+          className={`shop-tab${tab === "prints" ? " current" : ""}`}
+          onClick={() => setTab("prints")}
+        >
+          Prints
+        </button>
+        <button
+          className={`shop-tab${tab === "digital" ? " current" : ""}`}
+          onClick={() => setTab("digital")}
+        >
+          Digital
+        </button>
+      </div>
+
       <section className="shop-concepts">
-        <div className="shop-card">
+        <div className="shop-card" hidden={tab !== "prints"}>
           <span className="label shop-tag">Concept one</span>
           <h2>Prints</h2>
           {printPhoto && <Photo photo={printPhoto} sizes="(min-width: 900px) 44vw, 100vw" />}
@@ -78,7 +94,7 @@ export default function Shop() {
           </table>
           <a
             className="shop-button"
-            href="mailto:hello@example.com?subject=Print%20inquiry&body=Hi%20Cate%2C%20I%27m%20interested%20in%20a%20print%20of..."
+            href="mailto:catelay98@gmail.com?subject=Print%20inquiry&body=Hi%20Cate%2C%20I%27m%20interested%20in%20a%20print%20of..."
           >
             Inquire to order
           </a>
@@ -88,7 +104,7 @@ export default function Shop() {
           </p>
         </div>
 
-        <div className="shop-card">
+        <div className="shop-card" hidden={tab !== "digital"}>
           <span className="label shop-tag">Concept two</span>
           <h2>Digital</h2>
           {digitalPhoto && <Photo photo={digitalPhoto} sizes="(min-width: 900px) 44vw, 100vw" />}
