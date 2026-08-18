@@ -155,7 +155,7 @@ export default function AdminAlbum() {
       </div>
 
       <Guide>
-        Drop photos straight from the camera export — full size is fine. Before anything
+        Drop photos straight from the camera export, full size is fine. Before anything
         uploads, the browser quietly makes three web-sized copies (small, medium, large) and
         sends only those, so pages load fast and storage stays light. The originals never
         leave the computer.
@@ -189,11 +189,11 @@ export default function AdminAlbum() {
         Drag thumbnails to set the order. Click a photo to edit its caption, set it as the
         cover, or remove it.
       </p>
-      <Guide>
-        The order here is the order on the site — top-left first. Click any photo to open it:
-        the caption and place lines appear under it on the site in small type; &ldquo;Use as
-        cover&rdquo; makes it the face of this collection on the Work page; Remove deletes it
-        for good (it asks first). In Featured, the Wall 1–3 badges mark which photos hang on
+      <Guide to={`/work/${album.slug}`} linkLabel="See this collection on the site">
+        The order here is the order on the site, top-left first. Click any photo to open it.
+        The caption and place lines appear under it on the site in small type. &ldquo;Use as
+        cover&rdquo; makes it the face of this collection on the Work page. Remove deletes it
+        for good, and it asks first. In Featured, the Wall badges mark which photos hang on
         the home page.
       </Guide>
 

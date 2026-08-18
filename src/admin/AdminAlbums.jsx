@@ -64,7 +64,7 @@ function AlbumRowBody({ album, onTogglePublish }) {
 function PinnedAlbumRow({ album, onTogglePublish }) {
   return (
     <div className="album-row pinned">
-      <span className="drag-handle pin" title="Featured stays put — it is the home page">⌂</span>
+      <span className="drag-handle pin" title="Featured stays put. It is the home page">⌂</span>
       <AlbumRowBody album={album} onTogglePublish={onTogglePublish} />
     </div>
   );
@@ -176,10 +176,10 @@ export default function AdminAlbums() {
 
       <div className="card">
         <span className="label">New collection</span>
-        <Guide>
-          A collection is a set of photographs that lives at its own page on the site — like a
-          chapter. Type a title and create it; it starts hidden, so nobody sees it until you
-          publish. Fill it, arrange it, preview it, then flip it on.
+        <Guide to="/work" linkLabel="See the collections page">
+          A collection is a set of photographs with its own page on the site, like a chapter.
+          Type a title and create it. It starts hidden, so nobody sees it until you publish.
+          Fill it, arrange it, preview it, then flip it on.
         </Guide>
         <div className="new-collection">
           <input
@@ -201,14 +201,14 @@ export default function AdminAlbums() {
           Drag to set the order they appear on the site. The Featured collection hangs its first
           three photos on the home page wall.
         </p>
-        <Guide>
-          Everything here is live on the site. The grip dots drag a collection up or down —
-          that order is exactly the order visitors see. Featured is pinned because it IS the
-          home page rather than a page of its own. Preview opens a collection the way a
-          visitor sees it (drafts get a banner only we can see). The Published switch is the
-          only thing standing between a draft and the public.
+        <Guide to="/work" linkLabel="See this order on the site">
+          Everything here is live on the site. The grip dots drag a collection up or down,
+          and that order is exactly the order visitors see. Featured is pinned because it is
+          the home page rather than a page of its own. Preview opens a collection the way a
+          visitor sees it, and drafts get a banner only we can see. The Published switch is
+          the only thing standing between a draft and the public.
         </Guide>
-        {albums.length === 0 && <p className="msg">No collections yet — create the first one above.</p>}
+        {albums.length === 0 && <p className="msg">No collections yet. Create the first one above.</p>}
         {featured && <PinnedAlbumRow album={featured} onTogglePublish={togglePublish} />}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
           <SortableContext items={sortable.map((a) => a.id)} strategy={verticalListSortingStrategy}>
@@ -221,10 +221,10 @@ export default function AdminAlbums() {
 
       <div className="card">
         <span className="label">Home page wall</span>
-        <Guide>
+        <Guide to="/" linkLabel="See the wall on the home page">
           The home page opens with three photographs hung like prints on a wall. They are the
-          first three photos inside Featured, in the order they are dragged there — the first
-          one is the big anchor frame. This picker chooses the arrangement of the three.
+          first three photos inside Featured, in the order they are dragged there, and the
+          first one is the big anchor frame. This picker chooses the arrangement of the three.
           Change it, reload the site, see it.
         </Guide>
         <select
@@ -239,7 +239,7 @@ export default function AdminAlbums() {
         </select>
         <p className="hint">
           How the three wall frames arrange themselves.
-          {layoutSaved && <span className="msg"> Saved — the site updates on next load.</span>}
+          {layoutSaved && <span className="msg"> Saved. The site updates on next load.</span>}
         </p>
       </div>
     </main>

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase, DEMO } from "../lib/supabase";
+import { GuideToggle } from "../admin/guide";
 
 // When Cate is signed in, every public page grows a quiet "Leave a note"
 // button. Note mode: click anywhere, the note form opens right at that spot,
@@ -220,6 +221,7 @@ export default function FeedbackLayer() {
 
       {/* The toggles — present only when signed in */}
       <div className="note-controls">
+        <GuideToggle />
         <button
           className="note-signout"
           title="Sign out and see the site as visitors do"

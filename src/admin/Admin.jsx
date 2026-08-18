@@ -4,7 +4,6 @@ import { supabase, DEMO } from "../lib/supabase";
 import AdminAlbums from "./AdminAlbums";
 import AdminAlbum from "./AdminAlbum";
 import AdminNotes from "./AdminNotes";
-import { GuideProvider } from "./guide";
 
 export default function Admin() {
   const [session, setSession] = useState(null);
@@ -69,12 +68,10 @@ export default function Admin() {
     );
 
   return (
-    <GuideProvider>
-      <Routes>
-        <Route index element={<AdminAlbums />} />
-        <Route path="notes" element={<AdminNotes />} />
-        <Route path=":albumId" element={<AdminAlbum />} />
-      </Routes>
-    </GuideProvider>
+    <Routes>
+      <Route index element={<AdminAlbums />} />
+      <Route path="notes" element={<AdminNotes />} />
+      <Route path=":albumId" element={<AdminAlbum />} />
+    </Routes>
   );
 }

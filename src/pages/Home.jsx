@@ -4,6 +4,7 @@ import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
 import { getFeatured, getAlbums, getWallLayout } from "../lib/data";
 import { useTitle } from "../lib/title";
+import { SiteGuide } from "../admin/guide";
 
 export default function Home() {
   const [photos, setPhotos] = useState([]);
@@ -33,6 +34,12 @@ export default function Home() {
           <p className="opening-line">Photographs from quiet&nbsp;places.</p>
           <span className="label">Blue Ridge &amp; beyond</span>
         </div>
+        <div className="wall-guide-slot">
+          <SiteGuide to="/admin" linkLabel="Arrange it in the studio">
+            This wall is the first three photos of the Featured collection, in their drag
+            order. The arrangement comes from the Home page wall picker in the studio.
+          </SiteGuide>
+        </div>
         <div className={`wall layout-${layout}`}>
           {wall.map((p, i) => (
             <figure
@@ -53,6 +60,10 @@ export default function Home() {
         <div className="flow-head">
           <span className="label">Selected</span>
         </div>
+        <SiteGuide to="/admin" linkLabel="Curate it in the studio">
+          This walk is the rest of Featured, photo four onward, in drag order. Captions and
+          places come from clicking a photo in the studio.
+        </SiteGuide>
         {rest.map((p, i) => (
           <figure className="piece" key={p.id} onClick={() => setLb(i + wall.length)}>
             <Photo photo={p} sizes="(min-width: 760px) 720px, 100vw" />
@@ -68,6 +79,10 @@ export default function Home() {
         <div className="flow-head">
           <span className="label">Collections</span>
         </div>
+        <SiteGuide to="/admin" linkLabel="Reorder them in the studio">
+          Every published collection, in the order they are dragged in the studio. Each card
+          wears its cover photo.
+        </SiteGuide>
         <div className="collections">
           {albums.map((a) => (
             <Link to={`/work/${a.slug}`} className="collection-card" key={a.id}>

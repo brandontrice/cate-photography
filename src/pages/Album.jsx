@@ -4,6 +4,7 @@ import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
 import { getAlbum } from "../lib/data";
 import { useTitle } from "../lib/title";
+import { SiteGuide } from "../admin/guide";
 
 export default function Album() {
   const { slug } = useParams();
@@ -34,12 +35,16 @@ export default function Album() {
     <main className="flow" style={{ paddingTop: "22vh" }}>
       {!album.published && (
         <div className="draft-banner">
-          Draft — only you can see this. Publish it from the studio when it&rsquo;s ready.
+          Draft. Only you can see this. Publish it from the studio when it&rsquo;s ready.
         </div>
       )}
       <div className="flow-head">
         <span className="label">{album.title}</span>
       </div>
+      <SiteGuide to="/admin" linkLabel="Edit this collection in the studio">
+        Photos here follow the drag order in the studio, and each caption and place line is
+        set by clicking the photo there. Click any photo on this page to view it large.
+      </SiteGuide>
       {album.photos.map((p, i) => (
         <figure className="piece" key={p.id} onClick={() => setLb(i)}>
           <Photo photo={p} sizes="(min-width: 760px) 720px, 100vw" />

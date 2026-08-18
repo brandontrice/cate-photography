@@ -891,12 +891,41 @@ a:focus-visible, button:focus-visible {
   border-color: var(--grass);
 }
 .guide-note {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
   font-family: var(--sans);
-  font-size: 0.8rem;
-  line-height: 1.6;
-  color: var(--muted);
-  background: rgba(169, 144, 108, 0.06);
-  border-left: 2px solid var(--grass);
-  padding: 0.7rem 0.9rem;
-  margin: 0.7rem 0 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--bone);
+  background: rgba(169, 144, 108, 0.14);
+  border: 1px solid rgba(169, 144, 108, 0.45);
+  border-left: 3px solid var(--grass);
+  padding: 0.85rem 1rem;
+  margin: 0.8rem 0 1rem;
 }
+.guide-chip {
+  flex: none;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--grass);
+  padding: 0.2rem 0.45rem;
+  margin-top: 0.15rem;
+}
+.guide-body { display: block; }
+.guide-link {
+  display: inline-block;
+  margin-left: 0.6rem;
+  color: var(--grass);
+  border-bottom: 1px solid rgba(169, 144, 108, 0.5);
+  transition: border-color 0.25s ease;
+}
+.guide-link:hover { border-color: var(--grass); }
+
+/* Site-side guide notes sit inside gallery layouts; keep them readable width */
+.wall-guide-slot { grid-column: 1 / -1; }
+.opening .wall-guide-slot { display: contents; }
+.opening .guide-note { grid-column: 1 / -1; }

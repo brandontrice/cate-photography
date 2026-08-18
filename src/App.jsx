@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import FeedbackLayer from "./components/FeedbackLayer";
+import { GuideProvider } from "./admin/guide";
 import Home from "./pages/Home";
 import Work from "./pages/Work";
 import Album from "./pages/Album";
@@ -22,7 +23,7 @@ export default function App() {
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith("/admin");
   return (
-    <>
+    <GuideProvider>
       <ScrollToTop />
       {!isAdmin && <Nav />}
       <Routes>
@@ -35,6 +36,6 @@ export default function App() {
       </Routes>
       {!isAdmin && <Footer />}
       {!isAdmin && <FeedbackLayer />}
-    </>
+    </GuideProvider>
   );
 }

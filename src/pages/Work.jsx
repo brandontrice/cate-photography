@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Photo from "../components/Photo";
 import { getAlbums } from "../lib/data";
 import { useTitle } from "../lib/title";
+import { SiteGuide } from "../admin/guide";
 
 export default function Work() {
   const [albums, setAlbums] = useState([]);
@@ -17,6 +18,10 @@ export default function Work() {
   return (
     <main className="page">
       <span className="label">Collections</span>
+      <SiteGuide to="/admin" linkLabel="Manage them in the studio">
+        Published collections in studio drag order. Featured is not listed here because it is
+        the home page. Card faces are each collection&rsquo;s cover photo.
+      </SiteGuide>
       <div className="collections">
         {albums.map((a) => (
           <Link to={`/work/${a.slug}`} className="collection-card" key={a.id}>

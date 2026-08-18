@@ -38,10 +38,10 @@ export default function AdminNotes() {
         </div>
         <GuideToggle />
       </div>
-      <Guide>
-        Notes come from the &ldquo;Leave a note&rdquo; button on the site — pin one to any
-        spot on any page while signed in, and it lands here. This list is the to-do pile:
-        the path link jumps to the page, Resolve clears the pin from the site, Reopen brings
+      <Guide to="/" linkLabel="Go leave one on the site">
+        Notes come from the &ldquo;Leave a note&rdquo; button on the site. Pin one to any
+        spot on any page while signed in, and it lands here. This list is the to-do pile.
+        The path link jumps to the page, Resolve clears the pin from the site, Reopen brings
         it back, Delete removes it entirely.
       </Guide>
       <div className="card">
