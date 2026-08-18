@@ -12,8 +12,8 @@ function slugify(s) {
 
 // Known accounts — email (lowercase) to the name the studio greets.
 const NAMES = {
-  "cates-email@example.com": "Cate",
-  "brandons-email@example.com": "Brandon",
+  "catelate98@gmail.com": "Cate",
+  "btrice9595@gmail.com": "Brandon",
 };
 
 function firstName(email) {
