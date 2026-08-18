@@ -11,8 +11,17 @@ function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+// Known accounts, email (lowercase) to the name the studio greets.
+// IMPORTANT: put the two real login emails here after any fresh extract.
+const NAMES = {
+  "catelay98@gmail.com": "Cate",
+  "btrice9595@gmail.com": "Brandon",
+};
+
 function firstName(email) {
   if (!email) return "there";
+  const known = NAMES[email.toLowerCase()];
+  if (known) return known;
   const raw = email.split("@")[0].split(/[._-]/)[0];
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
@@ -170,6 +179,7 @@ export default function AdminAlbums() {
           <Link to="/" className="studio-nav-link">← View site</Link>
           <GuideToggle />
           <Link to="/admin/notes"><button className="ghost">Notes</button></Link>
+          <Link to="/admin/reset"><button className="ghost">Password</button></Link>
           <button className="ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
         </nav>
       </header>

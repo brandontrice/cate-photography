@@ -929,3 +929,8 @@ a:focus-visible, button:focus-visible {
 .wall-guide-slot { grid-column: 1 / -1; }
 .opening .wall-guide-slot { display: contents; }
 .opening .guide-note { grid-column: 1 / -1; }
+
+/* Popover placement: flip and edge-hug so notes stay on screen */
+.note-popover.pop-below { bottom: auto; top: calc(100% + 0.6rem); }
+.note-popover.pop-left { left: -0.4rem; transform: none; }
+.note-popover.pop-right { left: auto; right: -0.4rem; transform: none; }

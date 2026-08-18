@@ -16,6 +16,7 @@ export default function FeedbackLayer() {
   const [draft, setDraft] = useState(null);
   const [text, setText] = useState("");
   const [openPin, setOpenPin] = useState(null);
+  const [popPlace, setPopPlace] = useState({ below: false, align: "center" });
   const [drawer, setDrawer] = useState(false);
   const [docHeight, setDocHeight] = useState(0);
 
@@ -131,12 +132,25 @@ export default function FeedbackLayer() {
               left: `${n.x_pct}%`,
               top: `${(n.y_pct / 100) * docHeight}px`,
             }}
-            onClick={() => setOpenPin(openPin === n.id ? null : n.id)}
+            onClick={(e) => {
+              if (openPin === n.id) return setOpenPin(null);
+              const rect = e.currentTarget.getBoundingClientRect();
+              setPopPlace({
+                below: rect.top < 240,
+                align:
+                  rect.left < 150
+                    ? "left"
+                    : window.innerWidth - rect.right < 150
+                    ? "right"
+                    : "center",
+              });
+              setOpenPin(n.id);
+            }}
             title="Open note"
           >
             {i + 1}
             {openPin === n.id && (
-              <span className="note-popover" onClick={(e) => e.stopPropagation()}>
+              <span className={`note-popover${popPlace.below ? " pop-below" : ""} pop-${popPlace.align}`} onClick={(e) => e.stopPropagation()}>
                 <span className="note-text">{n.note}</span>
                 <span className="note-actions">
                   <button onClick={() => resolveNote(n.id)}>Resolve</button>

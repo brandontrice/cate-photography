@@ -4,12 +4,14 @@ import { supabase, DEMO } from "../lib/supabase";
 import AdminAlbums from "./AdminAlbums";
 import AdminAlbum from "./AdminAlbum";
 import AdminNotes from "./AdminNotes";
+import ResetPassword from "./ResetPassword";
 
 export default function Admin() {
   const [session, setSession] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   useEffect(() => {
     if (DEMO) return;
@@ -38,7 +40,16 @@ export default function Admin() {
     return (
       <main className="admin">
         <h1>The studio</h1>
-        <div className="card" style={{ maxWidth: 420 }}>
+        <form
+          className="card"
+          style={{ maxWidth: 420 }}
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setError("");
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) setError(error.message);
+          }}
+        >
           <input
             type="email"
             placeholder="Email"
@@ -53,17 +64,27 @@ export default function Admin() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
+          <button type="submit">Sign in</button>
           <button
+            type="button"
+            className="ghost"
+            style={{ marginLeft: "0.6rem" }}
             onClick={async () => {
               setError("");
-              const { error } = await supabase.auth.signInWithPassword({ email, password });
+              setInfo("");
+              if (!email) return setError("Type the email above first, then press this again.");
+              const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + "/admin/reset",
+              });
               if (error) setError(error.message);
+              else setInfo(`Reset link sent to ${email}. It signs you in and asks for a new password.`);
             }}
           >
-            Sign in
+            Forgot password
           </button>
           {error && <p className="msg">{error}</p>}
-        </div>
+          {info && <p className="msg">{info}</p>}
+        </form>
       </main>
     );
 
@@ -71,6 +92,7 @@ export default function Admin() {
     <Routes>
       <Route index element={<AdminAlbums />} />
       <Route path="notes" element={<AdminNotes />} />
+      <Route path="reset" element={<ResetPassword />} />
       <Route path=":albumId" element={<AdminAlbum />} />
     </Routes>
   );
