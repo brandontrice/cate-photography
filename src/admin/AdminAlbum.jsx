@@ -265,8 +265,10 @@ export default function AdminAlbum() {
         The order here is the order on the site, top-left first. Click any photo to open it.
         The caption and place lines appear under it on the site in small type. &ldquo;Use as
         cover&rdquo; makes it the face of this collection on the Work page. Remove deletes it
-        for good, and it asks first. In Featured, the Wall badges mark which photos hang on
-        the home page. The collection title above is clickable: rename it any time, the web
+        for good, and it asks first. In Featured, the badges mark the home page slots: Wall 1 is the
+        tall anchor, Wall 2 the upper frame of the pair, Wall 3 the small accent, and in the
+        One frame opening only the first photo shows. Drag photos here to change what lands
+        where. The collection title above is clickable: rename it any time, the web
         address follows the new name, and every old link quietly redirects.
       </Guide>
 

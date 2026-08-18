@@ -1,0 +1,73 @@
+// Release history, newest first. Add an entry at the top with every push;
+// the site shows the newest once to each signed-in person, and the footer
+// carries the current version.
+export const RELEASES = [
+  {
+    version: "v8",
+    date: "August 18, 2026",
+    notes: [
+      "Field Notes now shows in the site menu even before the first entry.",
+      "Release notes: this window. It opens once per release for each of us, and the version in the footer opens the full history.",
+      "The studio landing is reorganized: one Collections card with creation built in, a tidy row of studio tools, and a lighter header.",
+      "The guide now explains which Featured photo lands in which opening slot.",
+    ],
+  },
+  {
+    version: "v7",
+    date: "August 18, 2026",
+    notes: [
+      "Field Notes: a journal written from the studio. Paste an Instagram or TikTok link on its own line and it becomes the post.",
+      "Shop draft moved into the main menu with Prints and Digital tabs.",
+      "Straight-in opening now lists the collections beside the name.",
+      "Instagram and TikTok icons on the handles, Southwest Virginia in the footer and About, real contact email in place.",
+      "The background breathes slowly between forest green and matte black.",
+    ],
+  },
+  {
+    version: "v6",
+    date: "August 18, 2026",
+    notes: [
+      "Collections can be renamed; old links quietly redirect.",
+      "Five home page openings, chosen from small living previews.",
+      "Notes gained replies (two per note), authors, and whose-court chips; the list sorts into Waiting on you and Waiting on them.",
+      "A shop mockup page for comparing the two directions.",
+    ],
+  },
+  {
+    version: "v5",
+    date: "August 17, 2026",
+    notes: [
+      "The studio got a face: greeting, stats, cover thumbnails, and the guide that explains every section in place.",
+      "Featured pinned in the collections list; it is the home page.",
+    ],
+  },
+  {
+    version: "v4",
+    date: "August 17, 2026",
+    notes: [
+      "Wall arrangements became a studio choice.",
+      "Notes on the site: pin a thought to any spot, work the list from the studio.",
+    ],
+  },
+  {
+    version: "v3",
+    date: "August 17, 2026",
+    notes: [
+      "Password self-service, sign out from the site, click-to-view lightbox, caption editing, cover photos, drag ordering everywhere.",
+    ],
+  },
+  {
+    version: "v2",
+    date: "August 17, 2026",
+    notes: [
+      "The studio opened: collections, uploads that resize themselves, publishing, and the site went live on the real internet.",
+    ],
+  },
+  {
+    version: "v1",
+    date: "August 17, 2026",
+    notes: ["The site was born at the beach, with the fog road leading."],
+  },
+];
+
+export const CURRENT_VERSION = RELEASES[0].version;

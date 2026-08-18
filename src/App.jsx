@@ -4,6 +4,7 @@ import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import FeedbackLayer from "./components/FeedbackLayer";
 import { GuideProvider } from "./admin/guide";
+import ReleaseNotes from "./components/ReleaseNotes";
 import Home from "./pages/Home";
 import Work from "./pages/Work";
 import Album from "./pages/Album";
@@ -42,6 +43,7 @@ export default function App() {
       </Routes>
       {!isAdmin && <Footer />}
       <FeedbackLayer />
+      <ReleaseNotes />
     </GuideProvider>
   );
 }

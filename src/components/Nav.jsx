@@ -4,7 +4,6 @@ import { supabase, DEMO } from "../lib/supabase";
 
 export default function Nav() {
   const [session, setSession] = useState(null);
-  const [hasPosts, setHasPosts] = useState(false);
 
   useEffect(() => {
     if (DEMO) return;
@@ -13,21 +12,12 @@ export default function Nav() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (DEMO) return;
-    supabase
-      .from("posts")
-      .select("id", { count: "exact", head: true })
-      .eq("published", true)
-      .then(({ count }) => setHasPosts((count || 0) > 0));
-  }, []);
-
   return (
     <nav className="nav">
       <Link to="/" className="wordmark">Cate</Link>
       <ul>
         <li><NavLink className="navlink" to="/work">Work</NavLink></li>
-        {hasPosts && <li><NavLink className="navlink" to="/journal">Field Notes</NavLink></li>}
+        <li><NavLink className="navlink" to="/journal">Field Notes</NavLink></li>
         <li><NavLink className="navlink" to="/about">About</NavLink></li>
         <li><NavLink className="navlink" to="/contact">Contact</NavLink></li>
         {!DEMO && session && (

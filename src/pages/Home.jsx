@@ -48,9 +48,10 @@ export default function Home() {
         )}
         <div className="wall-guide-slot">
           <SiteGuide to="/admin" linkLabel="Arrange it in the studio">
-            The opening uses the front of the Featured collection: three photos as a wall,
-            one as a single frame, or none at all, depending on the Home page opening picker
-            in the studio.
+            The opening is filled from the front of Featured: in wall modes photo 1 is the
+            tall anchor, photo 2 the upper pair frame, photo 3 the accent. One frame shows
+            photo 1 alone, and Straight in lists the collections here instead. Both the
+            photos and the arrangement are set in the studio.
           </SiteGuide>
         </div>
         {count > 0 && (

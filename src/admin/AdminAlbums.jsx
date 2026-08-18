@@ -7,6 +7,7 @@ import { supabase } from "../lib/supabase";
 import { publicUrl, WALL_LAYOUTS, getWallLayout, setWallLayout } from "../lib/data";
 import { Guide, GuideToggle } from "./guide";
 import { displayName as firstName } from "./names";
+import { waitingOn } from "../lib/waiting";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -124,6 +125,7 @@ export default function AdminAlbums() {
   const [busy, setBusy] = useState(false);
   const [layout, setLayout] = useState("anchor-right");
   const [layoutSaved, setLayoutSaved] = useState(false);
+  const [notesMine, setNotesMine] = useState(0);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   async function load() {
@@ -139,7 +141,15 @@ export default function AdminAlbums() {
   useEffect(() => {
     load();
     getWallLayout().then(setLayout).catch(() => {});
-    supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user?.email || ""));
+    supabase.auth.getSession().then(async ({ data }) => {
+      const my = data.session?.user?.email || "";
+      setEmail(my);
+      const { data: open } = await supabase
+        .from("site_notes")
+        .select("*, note_replies(*)")
+        .eq("resolved", false);
+      setNotesMine((open || []).filter((x) => waitingOn(x, my).mine).length);
+    });
   }, []);
 
   async function changeLayout(value) {
@@ -208,16 +218,33 @@ export default function AdminAlbums() {
         </div>
         <nav className="studio-nav">
           <Link to="/" className="studio-nav-link">← View site</Link>
-          <GuideToggle />
-          <Link to="/admin/posts"><button className="ghost">Field Notes</button></Link>
-          <Link to="/admin/notes"><button className="ghost">Notes</button></Link>
-          <Link to="/admin/reset"><button className="ghost">Password</button></Link>
           <button className="ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
         </nav>
       </header>
 
+      <div className="studio-tiles">
+        <Link to="/admin/posts" className="studio-tile">
+          <span className="tile-title">Field Notes</span>
+          <span className="hint">Write and publish entries</span>
+        </Link>
+        <Link to="/admin/notes" className="studio-tile">
+          <span className="tile-title">
+            Notes {notesMine > 0 && <span className="tile-badge">{notesMine}</span>}
+          </span>
+          <span className="hint">{notesMine > 0 ? "Waiting on you" : "All caught up"}</span>
+        </Link>
+        <Link to="/admin/reset" className="studio-tile">
+          <span className="tile-title">Password</span>
+          <span className="hint">Change yours any time</span>
+        </Link>
+        <span className="studio-tile tile-static">
+          <span className="tile-title">Guide</span>
+          <GuideToggle />
+        </span>
+      </div>
+
       <div className="card">
-        <span className="label">New collection</span>
+        <span className="label">Collections</span>
         <Guide to="/work" linkLabel="See the collections page">
           A collection is a set of photographs with its own page on the site, like a chapter.
           Type a title and create it. It starts hidden, so nobody sees it until you publish.
@@ -235,11 +262,7 @@ export default function AdminAlbums() {
             Create
           </button>
         </div>
-      </div>
-
-      <div className="card">
-        <span className="label">Collections</span>
-        <p className="hint" style={{ marginTop: "0.4rem" }}>
+        <p className="hint" style={{ marginTop: "1rem" }}>
           Drag to set the order they appear on the site. The Featured collection hangs its first
           three photos on the home page wall.
         </p>
@@ -265,9 +288,11 @@ export default function AdminAlbums() {
       <div className="card">
         <span className="label">Home page opening</span>
         <Guide to="/" linkLabel="See the opening on the home page">
-          The home page opening comes from the front of Featured, in drag order. Wall modes
-          hang the first three photos, One frame shows just the first, and Straight in skips
-          frames entirely and moves right into the flow. Change it, reload the site, see it.
+          The opening is filled from the front of Featured, in drag order. In the wall modes,
+          photo 1 is the tall anchor, photo 2 is the upper frame of the pair, and photo 3 is
+          the small accent. One frame shows photo 1 alone. Straight in hangs no photos and
+          lists the collections beside the name instead. To change which photo lands where,
+          drag them inside Featured; the badges there mark the slots.
         </Guide>
         <div className="opening-grid">
           {WALL_LAYOUTS.map((l) => (
