@@ -1099,19 +1099,19 @@ a:focus-visible, button:focus-visible {
 .waiting-chip {
   display: inline-block;
   font-family: var(--sans);
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: lowercase;
-  padding: 0.14rem 0.45rem;
-  border: 1px solid var(--line);
-  color: var(--muted);
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--bone);
+  color: var(--ink);
+  background: var(--bone);
   margin-right: 0.5rem;
   vertical-align: middle;
 }
 .waiting-chip.mine {
   border-color: var(--grass);
-  color: var(--ink);
   background: var(--grass);
 }
 
@@ -1134,7 +1134,7 @@ a:focus-visible, button:focus-visible {
 /* Grouped notes: whose court, at a glance */
 .card.group-mine { border-left: 3px solid var(--grass); }
 .card.group-mine .group-title { color: var(--grass); }
-.card.group-theirs { border-left: 3px solid rgba(232, 228, 218, 0.35); }
+.card.group-theirs { border-left: 3px solid var(--bone); }
 .card.group-theirs .group-title { color: var(--bone); }
 .card.group-done { opacity: 0.75; }
 a.note-signout { text-decoration: none; display: inline-flex; align-items: center; }
@@ -1272,7 +1272,7 @@ a.note-signout { text-decoration: none; display: inline-flex; align-items: cente
   50% { background-color: #0c0c0c; }
   100% { background-color: #131614; }
 }
-body { animation: breathe 90s ease-in-out infinite; }
+body { animation: breathe 36s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   body { animation: none; }
 }
@@ -1560,3 +1560,30 @@ a.area-tab:hover { color: var(--bone); }
 .guide-pop.pop-above { top: auto; bottom: calc(100% + 0.5rem); }
 .guide-pop .guide-chip { margin-top: 0.15rem; }
 .guide-pop .guide-link { display: inline-block; margin-left: 0.5rem; }
+
+/* ————————————————————————————————
+   V11 — guide dot specificity + alignment, chip coding refinements
+   ———————————————————————————————— */
+.guide-spot {
+  vertical-align: -0.15em;
+}
+.guide-spot .guide-dot,
+.admin .guide-spot .guide-dot {
+  width: 1.15rem !important;
+  height: 1.15rem !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--grass) !important;
+  background: rgba(169, 144, 108, 0.16) !important;
+  color: var(--grass) !important;
+  font-family: var(--serif) !important;
+  font-style: italic !important;
+  font-size: 0.72rem !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  display: inline-grid;
+  place-items: center;
+}
+.label .guide-spot { margin-left: 0.5rem; }

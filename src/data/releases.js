@@ -3,6 +3,17 @@
 // carries the current version.
 export const RELEASES = [
   {
+    version: "v11",
+    date: "August 18, 2026",
+    notes: [
+      "Guide dots sized and anchored properly, beside the labels they explain.",
+      "The background breathes on a quicker, livelier cycle.",
+      "Whose-court chips are color-coded: sage is Brandon, bone is Cate, at the chip, the pin, and the group edge alike.",
+      "The menu says shop now; everything here is a working draft anyway.",
+      "Six questions from Brandon planted as tasks, pinned where each decision lives: the About text, the contact email, the shop direction, captions, the meadow photo, and the first Field Note.",
+    ],
+  },
+  {
     version: "v10",
     date: "August 18, 2026",
     notes: [

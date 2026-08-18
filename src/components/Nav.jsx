@@ -20,7 +20,7 @@ export default function Nav() {
         {!DEMO && session && (
           <li>
             <NavLink className="navlink navlink-draft" to="/shop" title="Visible only to us">
-              shop draft
+              shop
             </NavLink>
           </li>
         )}

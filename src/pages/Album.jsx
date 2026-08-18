@@ -45,12 +45,14 @@ export default function Album() {
         </div>
       )}
       <div className="flow-head">
-        <span className="label">{album.title}</span>
+        <span className="label">
+          {album.title}
+          <SiteGuide to="/admin" linkLabel="Edit this collection in the studio">
+            Photos here follow the drag order in the studio, and each caption and place line
+            is set by clicking the photo there. Click any photo on this page to view it large.
+          </SiteGuide>
+        </span>
       </div>
-      <SiteGuide to="/admin" linkLabel="Edit this collection in the studio">
-        Photos here follow the drag order in the studio, and each caption and place line is
-        set by clicking the photo there. Click any photo on this page to view it large.
-      </SiteGuide>
       {album.photos.map((p, i) => (
         <figure className="piece" key={p.id} onClick={() => setLb(i)}>
           <Photo photo={p} sizes="(min-width: 760px) 720px, 100vw" />
