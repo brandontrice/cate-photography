@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { Guide, GuideToggle } from "./guide";
 
 export default function AdminNotes() {
   const [notes, setNotes] = useState([]);
@@ -30,8 +31,19 @@ export default function AdminNotes() {
 
   return (
     <main className="admin">
-      <Link to="/admin" className="label">← Collections</Link>
-      <h1>Notes</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <div>
+          <Link to="/admin" className="label">← Collections</Link>
+          <h1>Notes</h1>
+        </div>
+        <GuideToggle />
+      </div>
+      <Guide>
+        Notes come from the &ldquo;Leave a note&rdquo; button on the site — pin one to any
+        spot on any page while signed in, and it lands here. This list is the to-do pile:
+        the path link jumps to the page, Resolve clears the pin from the site, Reopen brings
+        it back, Delete removes it entirely.
+      </Guide>
       <div className="card">
         <label className="toggle">
           <input

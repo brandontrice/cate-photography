@@ -881,3 +881,22 @@ a:focus-visible, button:focus-visible {
 /* Featured pinned row */
 .album-row.pinned { background: rgba(169, 144, 108, 0.05); }
 .drag-handle.pin { cursor: default; color: var(--grass); }
+
+/* ————————————————————————————————
+   V5 — studio guide notes
+   ———————————————————————————————— */
+.guide-toggle.on {
+  color: var(--ink);
+  background: var(--grass);
+  border-color: var(--grass);
+}
+.guide-note {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--muted);
+  background: rgba(169, 144, 108, 0.06);
+  border-left: 2px solid var(--grass);
+  padding: 0.7rem 0.9rem;
+  margin: 0.7rem 0 0.9rem;
+}

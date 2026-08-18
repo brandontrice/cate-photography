@@ -5,21 +5,14 @@ import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } 
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
 import { publicUrl, WALL_LAYOUTS, getWallLayout, setWallLayout } from "../lib/data";
+import { Guide, GuideToggle } from "./guide";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-// Known accounts — email (lowercase) to the name the studio greets.
-const NAMES = {
-  "catelate98@gmail.com": "Cate",
-  "btrice9595@gmail.com": "Brandon",
-};
-
 function firstName(email) {
   if (!email) return "there";
-  const known = NAMES[email.toLowerCase()];
-  if (known) return known;
   const raw = email.split("@")[0].split(/[._-]/)[0];
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
@@ -175,6 +168,7 @@ export default function AdminAlbums() {
         </div>
         <nav className="studio-nav">
           <Link to="/" className="studio-nav-link">← View site</Link>
+          <GuideToggle />
           <Link to="/admin/notes"><button className="ghost">Notes</button></Link>
           <button className="ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
         </nav>
@@ -182,6 +176,11 @@ export default function AdminAlbums() {
 
       <div className="card">
         <span className="label">New collection</span>
+        <Guide>
+          A collection is a set of photographs that lives at its own page on the site — like a
+          chapter. Type a title and create it; it starts hidden, so nobody sees it until you
+          publish. Fill it, arrange it, preview it, then flip it on.
+        </Guide>
         <div className="new-collection">
           <input
             type="text"
@@ -202,6 +201,13 @@ export default function AdminAlbums() {
           Drag to set the order they appear on the site. The Featured collection hangs its first
           three photos on the home page wall.
         </p>
+        <Guide>
+          Everything here is live on the site. The grip dots drag a collection up or down —
+          that order is exactly the order visitors see. Featured is pinned because it IS the
+          home page rather than a page of its own. Preview opens a collection the way a
+          visitor sees it (drafts get a banner only we can see). The Published switch is the
+          only thing standing between a draft and the public.
+        </Guide>
         {albums.length === 0 && <p className="msg">No collections yet — create the first one above.</p>}
         {featured && <PinnedAlbumRow album={featured} onTogglePublish={togglePublish} />}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
@@ -215,6 +221,12 @@ export default function AdminAlbums() {
 
       <div className="card">
         <span className="label">Home page wall</span>
+        <Guide>
+          The home page opens with three photographs hung like prints on a wall. They are the
+          first three photos inside Featured, in the order they are dragged there — the first
+          one is the big anchor frame. This picker chooses the arrangement of the three.
+          Change it, reload the site, see it.
+        </Guide>
         <select
           id="wall-layout"
           className="layout-select"
