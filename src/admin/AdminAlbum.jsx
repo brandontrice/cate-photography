@@ -4,7 +4,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
-import { publicUrl } from "../lib/data";
+import { publicUrl, getWallLayout, openingCount } from "../lib/data";
 import { prepareUpload } from "../lib/images";
 import { Guide, GuideToggle } from "./guide";
 
@@ -28,7 +28,7 @@ function SortableThumb({ photo, isCover, wallSlot, onOpen }) {
     >
       <img src={publicUrl(photo.path_sm)} alt={photo.caption || ""} draggable={false} />
       {isCover && <span className="cover-badge">Cover</span>}
-      {wallSlot && <span className="wall-badge">Wall {wallSlot}</span>}
+      {wallSlot && <span className="wall-badge">{wallSlot}</span>}
     </div>
   );
 }
@@ -40,6 +40,10 @@ export default function AdminAlbum() {
   const [status, setStatus] = useState("");
   const [dragOver, setDragOver] = useState(false);
   const [selected, setSelected] = useState(null); // photo being edited
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleVal, setTitleVal] = useState("");
+  const [titleErr, setTitleErr] = useState("");
+  const [opening, setOpening] = useState("anchor-right");
   const [caption, setCaption] = useState("");
   const [place, setPlace] = useState("");
   const fileInput = useRef(null);
@@ -58,7 +62,47 @@ export default function AdminAlbum() {
 
   useEffect(() => {
     load();
+    getWallLayout().then(setOpening).catch(() => {});
   }, [albumId]);
+
+  function slugify(s) {
+    return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  }
+
+  async function saveTitle() {
+    const nextTitle = titleVal.trim();
+    setTitleErr("");
+    if (!nextTitle) return;
+    // Featured keeps its slug no matter the title: the home page finds it by that key.
+    if (album.slug === "featured") {
+      await supabase.from("albums").update({ title: nextTitle }).eq("id", album.id);
+      setEditingTitle(false);
+      return load();
+    }
+    const nextSlug = slugify(nextTitle);
+    if (nextSlug === album.slug) {
+      await supabase.from("albums").update({ title: nextTitle }).eq("id", album.id);
+      setEditingTitle(false);
+      return load();
+    }
+    // Collision check against every slug any collection has ever used.
+    const { data: taken } = await supabase
+      .from("album_slugs")
+      .select("album_id")
+      .eq("slug", nextSlug)
+      .maybeSingle();
+    if (taken && taken.album_id !== album.id) {
+      return setTitleErr("Another collection already uses that address. Pick a different title.");
+    }
+    // Remember the new address alongside the old ones, then move.
+    await supabase.from("album_slugs").upsert({ slug: nextSlug, album_id: album.id });
+    await supabase
+      .from("albums")
+      .update({ title: nextTitle, slug: nextSlug })
+      .eq("id", album.id);
+    setEditingTitle(false);
+    load();
+  }
 
   function openEditor(photo) {
     setSelected(photo);
@@ -144,7 +188,35 @@ export default function AdminAlbum() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem" }}>
         <div>
           <Link to="/admin" className="label">← Collections</Link>
-          <h1>{album.title}</h1>
+          {editingTitle ? (
+            <div className="title-edit">
+              <input
+                type="text"
+                autoFocus
+                value={titleVal}
+                onChange={(e) => setTitleVal(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveTitle();
+                  if (e.key === "Escape") setEditingTitle(false);
+                }}
+              />
+              <button onClick={saveTitle}>Save</button>
+              <button className="ghost" onClick={() => setEditingTitle(false)}>Cancel</button>
+              {titleErr && <p className="msg">{titleErr}</p>}
+            </div>
+          ) : (
+            <h1
+              className="title-editable"
+              title="Click to rename"
+              onClick={() => {
+                setTitleVal(album.title);
+                setTitleErr("");
+                setEditingTitle(true);
+              }}
+            >
+              {album.title} <span className="title-pencil">rename</span>
+            </h1>
+          )}
         </div>
         <span style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
           <GuideToggle />
@@ -205,7 +277,13 @@ export default function AdminAlbum() {
                 key={p.id}
                 photo={p}
                 isCover={album.cover_photo_id === p.id}
-                wallSlot={album.slug === "featured" && i < 3 ? i + 1 : null}
+                wallSlot={
+                  album.slug === "featured" && i < openingCount(opening)
+                    ? opening === "one-frame"
+                      ? "Opening"
+                      : `Wall ${i + 1}`
+                    : null
+                }
                 onOpen={openEditor}
               />
             ))}

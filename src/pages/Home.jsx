@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
-import { getFeatured, getAlbums, getWallLayout } from "../lib/data";
+import { getFeatured, getAlbums, getWallLayout, openingCount } from "../lib/data";
 import { useTitle } from "../lib/title";
 import { SiteGuide } from "../admin/guide";
 
@@ -21,14 +21,14 @@ export default function Home() {
       .catch(console.error);
   }, []);
 
-  // The gallery wall: first three Featured photos, hung at different sizes.
-  const wall = photos.slice(0, 3);
-  // The flow continues with the rest.
-  const rest = photos.slice(3);
+  // The opening consumes 0, 1, or 3 Featured photos depending on the mode.
+  const count = openingCount(layout);
+  const wall = photos.slice(0, count);
+  const rest = photos.slice(count);
 
   return (
     <main>
-      <section className="opening">
+      <section className={`opening opening-${layout}`}>
         <div className="opening-type">
           <h1>Cate</h1>
           <p className="opening-line">Photographs from quiet&nbsp;places.</p>
@@ -36,24 +36,27 @@ export default function Home() {
         </div>
         <div className="wall-guide-slot">
           <SiteGuide to="/admin" linkLabel="Arrange it in the studio">
-            This wall is the first three photos of the Featured collection, in their drag
-            order. The arrangement comes from the Home page wall picker in the studio.
+            The opening uses the front of the Featured collection: three photos as a wall,
+            one as a single frame, or none at all, depending on the Home page opening picker
+            in the studio.
           </SiteGuide>
         </div>
-        <div className={`wall layout-${layout}`}>
-          {wall.map((p, i) => (
-            <figure
-              className={`wall-piece wall-${i + 1}`}
-              key={p.id}
-              onClick={() => setLb(i)}
-            >
-              <Photo photo={p} eager={i === 0} sizes="(min-width: 900px) 40vw, 70vw" />
-              <figcaption>
-                <span>{p.caption}</span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        {count > 0 && (
+          <div className={`wall layout-${layout}`}>
+            {wall.map((p, i) => (
+              <figure
+                className={`wall-piece wall-${i + 1}${count === 1 ? " wall-solo" : ""}`}
+                key={p.id}
+                onClick={() => setLb(i)}
+              >
+                <Photo photo={p} eager={i === 0} sizes="(min-width: 900px) 46vw, 80vw" />
+                <figcaption>
+                  <span>{p.caption}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="flow home-flow">

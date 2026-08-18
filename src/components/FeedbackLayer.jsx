@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase, DEMO } from "../lib/supabase";
 import { GuideToggle } from "../admin/guide";
+import { displayName } from "../admin/names";
 
 // When Cate is signed in, every public page grows a quiet "Leave a note"
 // button. Note mode: click anywhere, the note form opens right at that spot,
@@ -17,6 +18,8 @@ export default function FeedbackLayer() {
   const [text, setText] = useState("");
   const [openPin, setOpenPin] = useState(null);
   const [popPlace, setPopPlace] = useState({ below: false, align: "center" });
+  const [replyText, setReplyText] = useState("");
+  const [replyStatus, setReplyStatus] = useState("");
   const [drawer, setDrawer] = useState(false);
   const [docHeight, setDocHeight] = useState(0);
 
@@ -31,11 +34,18 @@ export default function FeedbackLayer() {
     if (DEMO) return;
     const { data } = await supabase
       .from("site_notes")
-      .select("*")
+      .select("*, note_replies(*)")
       .eq("path", pathname)
       .eq("resolved", false)
       .order("created_at");
-    setNotes(data || []);
+    setNotes(
+      (data || []).map((n) => ({
+        ...n,
+        note_replies: (n.note_replies || []).sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        ),
+      }))
+    );
   }, [pathname]);
 
   const exitMode = useCallback(() => {
@@ -101,8 +111,22 @@ export default function FeedbackLayer() {
       x_pct: draft.x_pct,
       y_pct: draft.y_pct,
       note: text.trim(),
+      author: session.user.email,
     });
     exitMode();
+    load();
+  }
+
+  async function saveReply(note) {
+    if (!replyText.trim()) return;
+    await supabase.from("note_replies").insert({
+      note_id: note.id,
+      reply: replyText.trim(),
+      status: replyStatus || null,
+      author: session.user.email,
+    });
+    setReplyText("");
+    setReplyStatus("");
     load();
   }
 
@@ -151,7 +175,38 @@ export default function FeedbackLayer() {
             {i + 1}
             {openPin === n.id && (
               <span className={`note-popover${popPlace.below ? " pop-below" : ""} pop-${popPlace.align}`} onClick={(e) => e.stopPropagation()}>
+                <span className="note-author">{displayName(n.author)}</span>
                 <span className="note-text">{n.note}</span>
+                {n.note_replies.map((r) => (
+                  <span className="note-reply" key={r.id}>
+                    <span className="note-author">
+                      {displayName(r.author)}
+                      {r.status && <span className={`status-chip s-${r.status}`}>{r.status}</span>}
+                    </span>
+                    <span className="note-text">{r.reply}</span>
+                  </span>
+                ))}
+                {n.note_replies.length < 2 ? (
+                  <span className="note-reply-form">
+                    <textarea
+                      rows={2}
+                      placeholder="Reply"
+                      value={openPin === n.id ? replyText : ""}
+                      onChange={(e) => setReplyText(e.target.value)}
+                    />
+                    <span className="note-reply-row">
+                      <select value={replyStatus} onChange={(e) => setReplyStatus(e.target.value)}>
+                        <option value="">No status</option>
+                        <option value="Answered">Answered</option>
+                        <option value="Done">Done</option>
+                        <option value="Won't do">Won&apos;t do</option>
+                      </select>
+                      <button onClick={() => saveReply(n)} disabled={!replyText.trim()}>Reply</button>
+                    </span>
+                  </span>
+                ) : (
+                  <span className="thread-full hint">Thread full. Start a fresh note if there is more to say.</span>
+                )}
                 <span className="note-actions">
                   <button onClick={() => resolveNote(n.id)}>Resolve</button>
                 </span>
@@ -224,7 +279,15 @@ export default function FeedbackLayer() {
               >
                 {i + 1}
               </button>
-              <span className="note-task-text">{n.note}</span>
+              <span className="note-task-text">
+                {n.note}
+                {n.note_replies.map((r) => (
+                  <span className="note-task-reply" key={r.id}>
+                    {displayName(r.author)}
+                    {r.status ? ` · ${r.status}` : ""}: {r.reply}
+                  </span>
+                ))}
+              </span>
               <button className="note-task-done" title="Mark resolved" onClick={() => resolveNote(n.id)}>
                 Done
               </button>
@@ -235,6 +298,11 @@ export default function FeedbackLayer() {
 
       {/* The toggles — present only when signed in */}
       <div className="note-controls">
+        {pathname !== "/shop" && (
+          <a href="/shop" className="note-signout" title="The shop mockup, visible only to us">
+            Shop draft
+          </a>
+        )}
         <GuideToggle />
         <button
           className="note-signout"

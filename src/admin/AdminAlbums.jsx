@@ -6,24 +6,10 @@ import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
 import { publicUrl, WALL_LAYOUTS, getWallLayout, setWallLayout } from "../lib/data";
 import { Guide, GuideToggle } from "./guide";
+import { displayName as firstName } from "./names";
 
 function slugify(s) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
-
-// Known accounts, email (lowercase) to the name the studio greets.
-// IMPORTANT: put the two real login emails here after any fresh extract.
-const NAMES = {
-  "catelay98@gmail.com": "Cate",
-  "btrice9595@gmail.com": "Brandon",
-};
-
-function firstName(email) {
-  if (!email) return "there";
-  const known = NAMES[email.toLowerCase()];
-  if (known) return known;
-  const raw = email.split("@")[0].split(/[._-]/)[0];
-  return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
 function greeting() {
@@ -230,12 +216,11 @@ export default function AdminAlbums() {
       </div>
 
       <div className="card">
-        <span className="label">Home page wall</span>
-        <Guide to="/" linkLabel="See the wall on the home page">
-          The home page opens with three photographs hung like prints on a wall. They are the
-          first three photos inside Featured, in the order they are dragged there, and the
-          first one is the big anchor frame. This picker chooses the arrangement of the three.
-          Change it, reload the site, see it.
+        <span className="label">Home page opening</span>
+        <Guide to="/" linkLabel="See the opening on the home page">
+          The home page opening comes from the front of Featured, in drag order. Wall modes
+          hang the first three photos, One frame shows just the first, and Straight in skips
+          frames entirely and moves right into the flow. Change it, reload the site, see it.
         </Guide>
         <select
           id="wall-layout"
@@ -248,7 +233,7 @@ export default function AdminAlbums() {
           ))}
         </select>
         <p className="hint">
-          How the three wall frames arrange themselves.
+          How the home page opens: a three-frame wall, a single frame, or straight into the flow.
           {layoutSaved && <span className="msg"> Saved. The site updates on next load.</span>}
         </p>
       </div>

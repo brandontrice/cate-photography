@@ -59,7 +59,22 @@ export async function getAlbum(slug) {
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
-  return data ? shapeAlbum(data) : null;
+  if (data) return shapeAlbum(data);
+  // Not a current slug. Check the history: renamed collections keep their
+  // old links alive, and the page redirects to the current address.
+  const { data: alias } = await supabase
+    .from("album_slugs")
+    .select("album_id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!alias) return null;
+  const { data: byId, error: idErr } = await supabase
+    .from("albums")
+    .select(ALBUM_SELECT)
+    .eq("id", alias.album_id)
+    .maybeSingle();
+  if (idErr) throw idErr;
+  return byId ? shapeAlbum(byId) : null;
 }
 
 export async function getFeatured() {
@@ -79,10 +94,19 @@ export async function getFeatured() {
 // ——— site settings ———
 
 export const WALL_LAYOUTS = [
-  { value: "anchor-right", label: "Anchor right — tall frame right, pair left" },
-  { value: "anchor-left", label: "Anchor left — tall frame left, pair right" },
-  { value: "row", label: "Even row — three frames, gently staggered" },
+  { value: "anchor-right", label: "Wall, anchor right: tall frame right, pair left" },
+  { value: "anchor-left", label: "Wall, anchor left: tall frame left, pair right" },
+  { value: "row", label: "Wall, even row: three frames, gently staggered" },
+  { value: "one-frame", label: "One frame: name beside a single large photo" },
+  { value: "straight-in", label: "Straight in: name and tagline, then the flow" },
 ];
+
+// How many Featured photos the opening consumes in each mode.
+export function openingCount(layout) {
+  if (layout === "one-frame") return 1;
+  if (layout === "straight-in") return 0;
+  return 3;
+}
 
 export async function getWallLayout() {
   if (DEMO) return "anchor-right";
