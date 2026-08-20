@@ -1,7 +1,7 @@
 // Client-side resize at upload time: three sizes, WebP, dimensions captured.
 // Keeps the free tier free and the gallery fast.
 
-const SIZES = { sm: 480, md: 1280, lg: 2200 };
+export const SIZES = { sm: 480, md: 1280, lg: 2200 };
 
 async function fileToBitmap(file) {
   return await createImageBitmap(file);

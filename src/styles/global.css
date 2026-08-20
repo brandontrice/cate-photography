@@ -51,6 +51,14 @@ a:focus-visible, button:focus-visible {
   color: var(--lichen);
 }
 
+/* Shown in place of a section's content when its data failed to load */
+.load-error {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 1rem;
+}
+
 /* ————————————————————————————————
    Nav
    ———————————————————————————————— */
@@ -91,43 +99,6 @@ a:focus-visible, button:focus-visible {
   transition: opacity 0.3s ease;
 }
 .nav a.navlink:hover, .nav a.navlink[aria-current="page"] { opacity: 1; }
-
-/* ————————————————————————————————
-   Hero — one image, full breath
-   ———————————————————————————————— */
-.hero {
-  height: 100svh;
-  position: relative;
-  display: grid;
-  place-items: end start;
-  overflow: hidden;
-}
-
-.hero .hero-img {
-  position: absolute;
-  inset: 0;
-}
-.hero .hero-img img, .hero .hero-img .ph {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero .hero-foot {
-  position: relative;
-  padding: 2.5rem var(--gutter);
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  background: linear-gradient(to top, rgba(19, 22, 20, 0.75), transparent);
-}
-
-.hero .hero-line {
-  font-style: italic;
-  font-size: clamp(1.35rem, 3vw, 1.9rem);
-  color: var(--bone);
-}
 
 /* ————————————————————————————————
    Gallery flow — a walk, not a feed
@@ -756,62 +727,6 @@ a:focus-visible, button:focus-visible {
   padding: 0.15rem 0.4rem;
 }
 
-.note-drawer {
-  position: fixed;
-  bottom: 4.5rem;
-  right: 1.25rem;
-  z-index: 61;
-  width: min(92vw, 340px);
-  max-height: 60vh;
-  overflow-y: auto;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 1rem;
-  font-family: var(--sans);
-}
-.note-drawer-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-.note-task {
-  display: flex;
-  gap: 0.7rem;
-  align-items: flex-start;
-  padding: 0.7rem 0;
-  border-top: 1px solid var(--line);
-}
-.note-task-jump {
-  flex: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  border: none;
-  background: var(--grass);
-  color: var(--ink);
-  font-size: 0.72rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-.note-task-text {
-  flex: 1;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--bone);
-}
-.note-task-done {
-  flex: none;
-  background: transparent;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.72rem;
-  padding: 0.3rem 0.6rem;
-  cursor: pointer;
-}
-.note-task-done:hover { color: var(--bone); border-color: var(--grass); }
-.note-signout.drawer-open { color: var(--bone); border-color: var(--grass); }
-
 /* ————————————————————————————————
    V5 — the studio gets a face
    ———————————————————————————————— */
@@ -992,17 +907,6 @@ a:focus-visible, button:focus-visible {
   color: var(--lichen);
   margin-right: 0.5rem;
 }
-.status-chip {
-  display: inline-block;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  padding: 0.1rem 0.4rem;
-  margin-left: 0.4rem;
-  background: var(--surface);
-  border: 1px solid var(--grass);
-  color: var(--grass);
-  text-transform: lowercase;
-}
 .note-reply {
   display: block;
   border-top: 1px solid var(--line);
@@ -1027,14 +931,6 @@ a:focus-visible, button:focus-visible {
   margin-top: 0.45rem;
   align-items: center;
 }
-.note-reply-row select {
-  background: var(--ink);
-  border: 1px solid var(--line);
-  color: var(--muted);
-  font-family: var(--sans);
-  font-size: 0.72rem;
-  padding: 0.3rem 0.4rem;
-}
 .note-reply-row button {
   background: var(--bone);
   color: var(--ink);
@@ -1047,7 +943,6 @@ a:focus-visible, button:focus-visible {
 .note-reply-row button:disabled { opacity: 0.45; cursor: default; }
 .note-reply-row .ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
 .thread-full { display: block; margin-top: 0.6rem; }
-.note-task-reply { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 0.3rem; }
 .notes-list-reply { color: var(--muted); font-size: 0.85rem; margin: 0.4rem 0 0 1rem; }
 .notes-reply-form { margin-top: 0.6rem; max-width: 480px; }
 
@@ -1415,47 +1310,6 @@ body { animation: breathe 36s ease-in-out infinite; }
 }
 .version-link:hover { color: var(--grass); }
 .version-plain { color: var(--faint); }
-
-/* Studio tool tiles */
-.studio-tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.9rem;
-  margin: 0.5rem 0 0.4rem;
-}
-.studio-tile {
-  display: grid;
-  gap: 0.3rem;
-  align-content: start;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 1rem 1.1rem;
-  transition: border-color 0.2s ease;
-}
-a.studio-tile:hover { border-color: var(--grass); }
-.tile-title {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.15rem;
-  color: var(--bone);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.tile-badge {
-  font-family: var(--sans);
-  font-style: normal;
-  font-size: 0.7rem;
-  font-weight: 500;
-  background: var(--grass);
-  color: var(--ink);
-  border-radius: 50%;
-  width: 1.4rem;
-  height: 1.4rem;
-  display: inline-grid;
-  place-items: center;
-}
-.tile-static .guide-toggle { justify-self: start; margin-top: 0.15rem; }
 
 /* ————————————————————————————————
    V9 — lowercase voice, area tabs, tools cluster, activity

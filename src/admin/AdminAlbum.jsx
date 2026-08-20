@@ -4,10 +4,11 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "../lib/supabase";
-import { publicUrl, getWallLayout, setWallLayout, openingCount, WALL_LAYOUTS } from "../lib/data";
+import { publicUrl, getWallLayout, setWallLayout, openingCount, WALL_LAYOUTS, visiblePhotos } from "../lib/data";
 import { prepareUpload } from "../lib/images";
 import { Guide } from "./guide";
 import { logAction } from "../lib/log";
+import { slugify } from "../lib/slug";
 
 const BUCKET = "photos";
 
@@ -104,10 +105,6 @@ export default function AdminAlbum() {
     getWallLayout().then(setOpening).catch(() => {});
   }, [albumId]);
 
-  function slugify(s) {
-    return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  }
-
   async function saveTitle() {
     const nextTitle = titleVal.trim();
     setTitleErr("");
@@ -195,16 +192,20 @@ export default function AdminAlbum() {
     load();
   }
 
+  // Files upload a few at a time (each file's three sizes already run in
+  // parallel) rather than strictly one at a time, so a big drop finishes faster.
+  const UPLOAD_CONCURRENCY = 3;
+
   async function handleFiles(files) {
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
-    let n = 0;
-    for (const file of list) {
-      n += 1;
-      setStatus(`Preparing ${n} of ${list.length}…`);
+    if (!list.length) return;
+    let done = 0;
+    setStatus(`Uploading 0 of ${list.length}…`);
+
+    async function uploadOne(file, orderOffset) {
       const { sm, md, lg, width, height } = await prepareUpload(file);
       const id = crypto.randomUUID();
       const base = `${albumId}/${id}`;
-      setStatus(`Uploading ${n} of ${list.length}…`);
       const up = async (suffix, blob) => {
         const { error } = await supabase.storage
           .from(BUCKET)
@@ -225,11 +226,25 @@ export default function AdminAlbum() {
         path_lg,
         width,
         height,
-        sort_order: photos.length + n - 1,
+        sort_order: photos.length + orderOffset,
       });
+      done += 1;
+      setStatus(`Uploading ${done} of ${list.length}…`);
     }
-    setStatus(list.length ? `${list.length} photo${list.length === 1 ? "" : "s"} added.` : "");
-    if (list.length) logAction("added photos to", album.title, `${list.length} photo${list.length === 1 ? "" : "s"}`);
+
+    let next = 0;
+    async function worker() {
+      while (next < list.length) {
+        const i = next++;
+        await uploadOne(list[i], i);
+      }
+    }
+    await Promise.all(
+      Array.from({ length: Math.min(UPLOAD_CONCURRENCY, list.length) }, worker)
+    );
+
+    setStatus(`${list.length} photo${list.length === 1 ? "" : "s"} added.`);
+    logAction("added photos to", album.title, `${list.length} photo${list.length === 1 ? "" : "s"}`);
     load();
   }
 
@@ -239,9 +254,7 @@ export default function AdminAlbum() {
     const newIndex = photos.findIndex((p) => p.id === over.id);
     const next = arrayMove(photos, oldIndex, newIndex);
     setPhotos(next);
-    await Promise.all(
-      next.map((p, i) => supabase.from("photos").update({ sort_order: i }).eq("id", p.id))
-    );
+    await supabase.from("photos").upsert(next.map((p, i) => ({ id: p.id, sort_order: i })));
     logAction("reordered photos in", album.title);
   }
 
@@ -315,8 +328,7 @@ export default function AdminAlbum() {
               >
                 <MiniOpening
                   value={l.value}
-                  thumbs={photos
-                    .filter((p) => !p.hidden)
+                  thumbs={visiblePhotos(photos)
                     .slice(0, 3)
                     .map((p) => publicUrl(p.path_sm))}
                 />
@@ -378,14 +390,11 @@ export default function AdminAlbum() {
             {(() => {
               const slots = {};
               if (album.slug === "featured") {
-                let v = 0;
-                for (const p of photos) {
-                  if (p.hidden) continue;
-                  if (v < openingCount(opening)) {
+                visiblePhotos(photos)
+                  .slice(0, openingCount(opening))
+                  .forEach((p, v) => {
                     slots[p.id] = opening === "one-frame" ? "Opening" : `Wall ${v + 1}`;
-                  }
-                  v += 1;
-                }
+                  });
               }
               return photos.map((p) => (
                 <SortableThumb

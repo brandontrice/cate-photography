@@ -1,3 +1,6 @@
+-- Historical — already folded into schema.sql. Kept for the record; a fresh
+-- setup only needs to run schema.sql.
+--
 -- V4 migration — run this whole file in Supabase > SQL Editor.
 -- Site settings: small key/value store for Cate's layout choices.
 

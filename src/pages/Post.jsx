@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Photo from "../components/Photo";
 import PostBody from "../components/PostBody";
+import LoadError from "../components/LoadError";
 import { getPost } from "../lib/data";
 import { useTitle } from "../lib/title";
 
@@ -9,15 +10,34 @@ export default function Post() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [missing, setMissing] = useState(false);
+  const [error, setError] = useState(false);
   useTitle(post ? post.title : "Field Notes");
 
   useEffect(() => {
+    let current = true;
     setPost(null);
     setMissing(false);
+    setError(false);
     getPost(slug)
-      .then((p) => (p ? setPost(p) : setMissing(true)))
-      .catch(console.error);
+      .then((p) => {
+        if (!current) return;
+        p ? setPost(p) : setMissing(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (current) setError(true);
+      });
+    return () => {
+      current = false;
+    };
   }, [slug]);
+
+  if (error)
+    return (
+      <main className="page prose">
+        <LoadError />
+      </main>
+    );
 
   if (missing)
     return (

@@ -8,10 +8,7 @@ import { publicUrl } from "../lib/data";
 import { Guide } from "./guide";
 import { logAction } from "../lib/log";
 import { displayName as firstName } from "./names";
-
-function slugify(s) {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
+import { slugify } from "../lib/slug";
 
 function greeting() {
   const h = new Date().getHours();
@@ -136,9 +133,7 @@ export default function AdminAlbums() {
     const newIndex = sortable.findIndex((a) => a.id === over.id);
     const next = arrayMove(sortable, oldIndex, newIndex);
     setAlbums(featured ? [featured, ...next] : next);
-    await Promise.all(
-      next.map((a, i) => supabase.from("albums").update({ sort_order: i + 1 }).eq("id", a.id))
-    );
+    await supabase.from("albums").upsert(next.map((a, i) => ({ id: a.id, sort_order: i + 1 })));
     logAction("reordered collections");
   }
 

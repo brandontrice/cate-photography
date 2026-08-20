@@ -2,30 +2,33 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
-import { getFeatured, getAlbums, getWallLayout, openingCount } from "../lib/data";
+import LoadError from "../components/LoadError";
+import { getFeatured, getAlbums, getWallLayout, openingCount, visiblePhotos } from "../lib/data";
 import { useTitle } from "../lib/title";
 import { SiteGuide } from "../admin/guide";
 
 export default function Home() {
   const [photos, setPhotos] = useState([]);
+  const [photosError, setPhotosError] = useState(false);
   const [albums, setAlbums] = useState([]);
+  const [albumsError, setAlbumsError] = useState(false);
   const [lb, setLb] = useState(null);
   const [layout, setLayout] = useState("anchor-right");
   useTitle(null);
 
   useEffect(() => {
-    getFeatured().then(setPhotos).catch(console.error);
+    getFeatured().then(setPhotos).catch(() => setPhotosError(true));
     getWallLayout().then(setLayout).catch(console.error);
     getAlbums()
       .then((all) => setAlbums(all.filter((a) => a.slug !== "featured")))
-      .catch(console.error);
+      .catch(() => setAlbumsError(true));
   }, []);
 
   // The opening consumes 0, 1, or 3 visible Featured photos depending on the
   // mode. Hidden photos (visible only to signed-in eyes) never take a slot;
   // they appear ghosted in the flow instead.
   const count = openingCount(layout);
-  const visible = photos.filter((p) => !p.hidden);
+  const visible = visiblePhotos(photos);
   const wall = visible.slice(0, count);
   const wallIds = new Set(wall.map((p) => p.id));
   const rest = photos.filter((p) => !wallIds.has(p.id));
@@ -59,6 +62,7 @@ export default function Home() {
             ))}
           </nav>
         )}
+        {photosError && <LoadError />}
         {count > 0 && (
           <div className={`wall layout-${layout}`}>
             {wall.map((p, i) => (
@@ -113,19 +117,23 @@ export default function Home() {
             </SiteGuide>
           </span>
         </div>
-        <div className="collections">
-          {albums.map((a) => (
-            <Link to={`/work/${a.slug}`} className="collection-card" key={a.id}>
-              {a.cover && (
-                <Photo photo={a.cover} sizes="(min-width: 760px) 50vw, 100vw" />
-              )}
-              <h2>{a.title}</h2>
-              <span className="count label">
-                {a.visibleCount} photograph{a.visibleCount === 1 ? "" : "s"}
-              </span>
-            </Link>
-          ))}
-        </div>
+        {albumsError ? (
+          <LoadError />
+        ) : (
+          <div className="collections">
+            {albums.map((a) => (
+              <Link to={`/work/${a.slug}`} className="collection-card" key={a.id}>
+                {a.cover && (
+                  <Photo photo={a.cover} sizes="(min-width: 760px) 50vw, 100vw" />
+                )}
+                <h2>{a.title}</h2>
+                <span className="count label">
+                  {a.visibleCount} photograph{a.visibleCount === 1 ? "" : "s"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {lb !== null && (

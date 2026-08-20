@@ -1,3 +1,6 @@
+-- Historical — already folded into schema.sql. Kept for the record; a fresh
+-- setup only needs to run schema.sql.
+--
 -- V5 migration. Run this whole file in Supabase > SQL Editor.
 -- Adds: slug history for renamed collections, note authors, and note replies.
 

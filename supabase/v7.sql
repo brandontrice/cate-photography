@@ -1,3 +1,6 @@
+-- Historical — already folded into schema.sql. Kept for the record; a fresh
+-- setup only needs to run schema.sql.
+--
 -- V7 migration (activity log). Run whole file in Supabase > SQL Editor.
 -- A plain record of studio changes, for auditing and hand-reverting.
 

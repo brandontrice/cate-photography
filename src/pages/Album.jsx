@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Photo from "../components/Photo";
 import Lightbox from "../components/Lightbox";
+import LoadError from "../components/LoadError";
 import { getAlbum } from "../lib/data";
 import { useTitle } from "../lib/title";
 import { SiteGuide } from "../admin/guide";
@@ -11,21 +12,38 @@ export default function Album() {
   const navigate = useNavigate();
   const [album, setAlbum] = useState(null);
   const [missing, setMissing] = useState(false);
+  const [error, setError] = useState(false);
   const [lb, setLb] = useState(null);
   useTitle(album ? album.title : null);
 
   useEffect(() => {
+    let current = true;
     setAlbum(null);
     setMissing(false);
+    setError(false);
     getAlbum(slug)
       .then((a) => {
+        if (!current) return;
         if (!a) return setMissing(true);
         // An old link to a renamed collection: move to the current address.
         if (a.slug !== slug) return navigate(`/work/${a.slug}`, { replace: true });
         setAlbum(a);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        if (current) setError(true);
+      });
+    return () => {
+      current = false;
+    };
   }, [slug, navigate]);
+
+  if (error)
+    return (
+      <main className="page prose">
+        <LoadError />
+      </main>
+    );
 
   if (missing)
     return (

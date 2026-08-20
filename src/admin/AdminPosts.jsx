@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Guide } from "./guide";
 import { logAction } from "../lib/log";
-
-function slugify(s) {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
+import { slugify } from "../lib/slug";
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState([]);

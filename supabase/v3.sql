@@ -1,3 +1,6 @@
+-- Historical — already folded into schema.sql. Kept for the record; a fresh
+-- setup only needs to run schema.sql.
+--
 -- V3 migration — run this whole file in Supabase > SQL Editor.
 -- Adds site notes: Cate's pinned feedback on the live site.
 

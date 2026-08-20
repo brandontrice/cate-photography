@@ -23,11 +23,18 @@ function shapePhoto(row) {
   };
 }
 
+// Photos in display order, skipping ones marked hidden. The single source of
+// truth for "hidden photos give up their slot/cover role to the next visible
+// one" — used here, on the home page wall, and by the studio's slot badges.
+export function visiblePhotos(photos) {
+  return photos.filter((p) => !p.hidden);
+}
+
 function shapeAlbum(a) {
   const photos = (a.photos || [])
     .sort((x, y) => x.sort_order - y.sort_order)
     .map(shapePhoto);
-  const visible = photos.filter((p) => !p.hidden);
+  const visible = visiblePhotos(photos);
   const cover =
     visible.find((p) => p.id === a.cover_photo_id) || visible[0] || null;
   return { ...a, photos, cover, visibleCount: visible.length };
